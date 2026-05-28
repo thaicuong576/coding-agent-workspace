@@ -8,7 +8,7 @@
 
 ## 2026-05-28 - Conversation Handoff Memory
 
-Eddie and Codex clarified a major architecture mistake Eddie had been feeling for months: `eddie-team` should not be the universal coding-agent home. It is a project repo: the agent-office project for Edide Branding Company. The coding agents need a separate home workspace that can point to many project repos.
+Eddie and the coding agent clarified a major architecture mistake Eddie had been feeling for months: `eddie-team` should not be the universal coding-agent home. It is a project repo: the agent-office project for Edide Branding Company. The coding agents need a separate home workspace that can point to many project repos.
 
 Current intended structure:
 
@@ -62,7 +62,7 @@ Remote: none
 
 No GitHub repo exists for this workspace yet.
 
-How future Codex sessions should start:
+How future coding-agent sessions should start:
 
 1. Open from `D:\eddie-agents\coding-agent-workspace`.
 2. Read `AGENTS.md`.
@@ -83,3 +83,17 @@ D:\eddie-projects\tools\hyperframes-video-engine
 ```
 
 Current highest-level next move: keep this workspace as the long-lived coding-agent memory layer, then gradually move any cross-project state out of `eddie-team` and into this workspace. Do not restructure everything immediately unless Eddie asks.
+
+## 2026-05-28 - Shared Agent Identity Correction
+
+Eddie clarified that this workspace is not just for Codex. It should give every coding agent and every coding-agent brain the same shared identity and continuity.
+
+Correct framing:
+
+```text
+Eddie coding agent = any coding brain operating from this workspace
+Codex = one possible implementation/session of that shared role
+Claude/Gemini/local agents = also inherit this workspace identity when opened here
+```
+
+Future agents should not read the memory as "be Codex." They should read it as "be Eddie's coding agent, with the shared house style, rules, project pointers, and continuity."

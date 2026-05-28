@@ -1,7 +1,7 @@
 {
   "workspace": "D:\\eddie-agents\\coding-agent-workspace",
   "purpose": "Home base for coding agents working across Eddie's local repos.",
-  "current_focus": "Stabilize the operator workspace separation from project repos.",
+  "current_focus": "Stabilize a shared coding-agent identity and workspace separation from project repos.",
   "primary_project": {
     "name": "eddie-team",
     "path": "D:\\eddie-projects\\eddie-team"
@@ -12,7 +12,7 @@
   ],
   "last_checkpoint": {
     "date": "2026-05-28",
-    "summary": "Conversation handoff memory was written. eddie-team was committed and pushed to GitHub at 5b52fd8; this workspace is local-only and has no remote."
+    "summary": "Conversation handoff memory was generalized from Codex-specific to shared coding-agent identity. eddie-team was committed and pushed to GitHub at 5b52fd8; this workspace is local-only and has no remote."
   },
   "rules": [
     "This workspace is the coding-agent home.",
