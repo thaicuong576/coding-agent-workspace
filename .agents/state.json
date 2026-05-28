@@ -1,0 +1,25 @@
+{
+  "workspace": "D:\\eddie-agents\\coding-agent-workspace",
+  "purpose": "Home base for coding agents working across Eddie's local repos.",
+  "current_focus": "Stabilize the operator workspace separation from project repos.",
+  "primary_project": {
+    "name": "eddie-team",
+    "path": "D:\\eddie-projects\\eddie-team"
+  },
+  "known_projects": [
+    "eddie-team",
+    "hyperframes-video-engine"
+  ],
+  "last_checkpoint": {
+    "date": "2026-05-28",
+    "summary": "eddie-team was committed and pushed to GitHub at 5b52fd8 after adding the video producer workflow and repo guide."
+  },
+  "rules": [
+    "This workspace is the coding-agent home.",
+    "Project repos are target work sites.",
+    "Keep cross-project memory here.",
+    "Keep project-specific source and docs in the target repo.",
+    "Do not store secrets or generated media."
+  ]
+}
+

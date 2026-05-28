@@ -1,0 +1,34 @@
+{
+  "name": "eddie-team",
+  "path": "D:\\eddie-projects\\eddie-team",
+  "role": "Agent-office project repo for Edide Branding Company.",
+  "read_first": [
+    "AGENTS.md",
+    "docs/ARCHITECTURE.md",
+    "docs/VIDEO_PRODUCTION_WORKFLOW.md",
+    "docs/GITHUB_REPO_VIDEO_WORKFLOW.md"
+  ],
+  "owned_content": [
+    "company truth",
+    "team rosters",
+    "agent source prompts",
+    "workflow contracts",
+    "Slack manifests",
+    "verification tools",
+    "project-local artifact contracts"
+  ],
+  "do_not_store_here": [
+    "coding-agent global state",
+    "cross-project session logs",
+    "secrets",
+    "runtime cache",
+    "rendered MP4 drafts"
+  ],
+  "common_commands": [
+    "python hive.py build-prompts --force",
+    "python hive.py sync",
+    "python hive.py status",
+    "python hive.py status repo-video"
+  ]
+}
+

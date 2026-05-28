@@ -1,0 +1,24 @@
+# Local agent/runtime noise
+.codex/
+.hermes/
+node_modules/
+__pycache__/
+*.pyc
+*.log
+*.pid
+
+# Secrets
+*.env
+*.local
+*.secret
+secrets/
+
+# Heavy/generated media
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.png
+*.jpg
+*.jpeg
+

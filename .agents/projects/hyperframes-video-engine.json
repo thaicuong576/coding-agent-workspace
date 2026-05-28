@@ -1,0 +1,17 @@
+{
+  "name": "hyperframes-video-engine",
+  "path": "D:\\eddie-projects\\tools\\hyperframes-video-engine",
+  "role": "Video render engine and Hyperframes project workspace.",
+  "read_first": [
+    "README.md",
+    "package.json"
+  ],
+  "boundary": "Edit per-project video workspaces when requested. Do not edit shared renderer internals or templates unless Eddie explicitly asks.",
+  "known_project_output_area": [
+    "videos/<project-id>/"
+  ],
+  "common_commands": [
+    "npm run dev"
+  ]
+}
+
