@@ -12,7 +12,7 @@
   ],
   "last_checkpoint": {
     "date": "2026-05-28",
-    "summary": "eddie-team was committed and pushed to GitHub at 5b52fd8 after adding the video producer workflow and repo guide."
+    "summary": "Conversation handoff memory was written. eddie-team was committed and pushed to GitHub at 5b52fd8; this workspace is local-only and has no remote."
   },
   "rules": [
     "This workspace is the coding-agent home.",
@@ -22,4 +22,3 @@
     "Do not store secrets or generated media."
   ]
 }
-
