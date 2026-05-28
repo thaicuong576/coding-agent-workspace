@@ -55,7 +55,15 @@ D:\eddie-projects\tools\hyperframes-video-engine
 .agents/projects/*.json     Project pointers and boundaries.
 .agents/handoffs/           Cross-session handoff notes.
 .agents/rules/              Global coding-agent rules.
+.agents/skills/             Shared skill source.
+.agents/plugins/            Shared plugin source.
+.agents/commands/           Shared command source.
+.agents/agents/             Shared subagent/source profiles.
+.codex/                     Codex adapter only.
+.claude/                    Claude Code adapter only.
 ```
+
+Canonical source belongs under `.agents/`. Runtime-specific folders such as `.codex/` and `.claude/` are adapters, mirrors, or links so different tools can consume the same shared brain.
 
 ## Verification Habit
 

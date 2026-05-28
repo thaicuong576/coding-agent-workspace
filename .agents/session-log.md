@@ -97,3 +97,22 @@ Claude/Gemini/local agents = also inherit this workspace identity when opened he
 ```
 
 Future agents should not read the memory as "be Codex." They should read it as "be Eddie's coding agent, with the shared house style, rules, project pointers, and continuity."
+
+## 2026-05-28 - Workspace Skills/Plugins Structure
+
+Eddie clarified that the point is not just Codex. Other agents will not load `C:\Users\ASUS\.codex\...`, so shared behavior must live in the workspace.
+
+Implemented structure:
+
+```text
+.agents/skills/      Canonical shared skills
+.agents/plugins/     Canonical shared plugin source
+.agents/commands/    Canonical command recipes
+.agents/agents/      Canonical subagent profiles
+.agents/adapters/    Notes for adapting shared source into runtimes
+.codex/              Codex adapter
+.claude/             Claude Code adapter
+CLAUDE.md            Claude-friendly entrypoint pointing back to AGENTS.md
+```
+
+Rule: `.agents/` is source of truth. `.codex/` and `.claude/` are adapters, mirrors, or links.

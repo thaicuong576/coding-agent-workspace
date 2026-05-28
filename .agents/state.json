@@ -19,6 +19,8 @@
     "Project repos are target work sites.",
     "Keep cross-project memory here.",
     "Keep project-specific source and docs in the target repo.",
+    "Keep shared skills/plugins/commands under .agents as canonical source.",
+    "Use .codex and .claude as runtime adapters, not canonical memory.",
     "Do not store secrets or generated media."
   ]
 }
