@@ -85,12 +85,12 @@ When a command or request is received, activate the appropriate persona, skills,
 ├── README.md               - High-level directory map explaining Taxonomy
 ├── state.json              - Active workspace project and focus
 ├── rules/                  - Global rules (coding, safety, boundaries, verification)
-├── personas/
-│   ├── README.md           - Description of Persona (Who I am)
+├── personas/               - Personas (Who I am)
+│   ├── README.md           - Description of Personas
 │   └── fullstack-builder.md- Core operator persona
 ├── skills/                 - Skills Capability Hierarchy (What I know)
 │   ├── README.md           - Description of Skills
-│   ├── design/             - Brand kit, CSS, and aesthetic taste skills
+│   ├── design/             - Design-taste packages (brandkit, minimalist, etc.)
 │   ├── frontend/           - Frontend framework & UI standards
 │   ├── backend/            - API & backend architecture
 │   ├── infra/              - DevOps & deployment configurations
@@ -105,12 +105,23 @@ When a command or request is received, activate the appropriate persona, skills,
 │   ├── review-code.md
 │   ├── prepare-deploy.md
 │   └── handoff.md
-├── projects/
+├── recipes/                - Recipes (How skills and commands combine)
+│   └── README.md           - Recipes index and definition
+├── projects/               - Projects (Where real product repos live)
 │   ├── _template.json      - Reusable project config template
 │   └── *.json              - Target project configurations
-├── handoffs/
+├── handoffs/               - Handoff notes (Cross-session handoff logs)
 │   ├── README.md           - Handoff instructions
 │   └── *.md                - Chronological handoff logs
-└── sessions/
-    └── README.md           - Running session history info
+├── sessions/               - Session records (Logs and decisions)
+│   ├── README.md           - Session info
+│   └── session-log.md      - Cumulative action log
+├── templates/              - Reusable document and file templates
+├── plugins/                - Executable tools/helpers (e.g. superpowers)
+├── docs/                   - Long-form explanations and decisions
+│   ├── digital-product-engineering-os.md
+│   └── decisions.md        - Log of architectural decisions
+└── scratch/                - Temporary experiments or messy files
+    ├── README.md           - Scratch definition
+    └── test_*.js           - Local diagnostic tests
 ```
