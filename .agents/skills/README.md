@@ -1,118 +1,42 @@
-# Shared Coding Skills
+# Skills (What I Know)
 
-This folder contains the default shared coding skills for Eddie's coding-agent
-workspace.
+This folder houses the technical knowledge bases and guidelines (skills) available to coding agents.
 
-Default active skill:
+## Definition
 
-```text
-engineering-judgment.md
-```
+- **Skill = What I know**: A skill defines technical domain knowledge, styling rules, deployment routines, and diagnostic workflows. Unlike a Persona (which defines identity), a Skill provides specific architectural standards or domain knowledge for a specific domain.
 
-Do not treat this folder as Eddie's whole personal skill library. It should stay
-small and coding-focused.
+---
 
-For the current coding workspace, load only:
+## Capability Hierarchy
 
-```text
-.agents/plugins/superpowers/
-.agents/skills/engineering-judgment.md
-```
+Skills are organized into subcategories matching our engineering disciplines:
 
-Superpowers belongs in this coding workspace because it is process-heavy. Do
-not add it to Eddie's global or personal prompt layer.
+### 1. [Design (skills/design/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/design/)
+Contains design, branding, and visual-taste guidelines:
+- **`design-taste-frontend/`**: The core anti-slop visual guidance for premium layouts and styling.
+- **`brandkit/`**: Logo and brand identity guidelines.
+- **`image-to-code-skill/`**: Copying visual layout screenshots into CSS/HTML.
+- **`imagegen-frontend-web/` & `imagegen-frontend-mobile/`**: Generating design reference mockups.
+- **Taste Variants**: `brutalist-skill`, `gpt-tasteskill`, `minimalist-skill`, `redesign-skill`, `soft-skill`, `stitch-skill`, `taste-skill`.
 
-If a runtime needs skills in a tool-specific location, mirror or link from this
-folder into that runtime adapter.
+### 2. [Frontend (skills/frontend/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/frontend/)
+- **[frontend.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/frontend/frontend.md)**: Coding conventions for React, Next.js, TypeScript, and premium Vanilla CSS styling.
 
-## Optional Skills
+### 3. [Backend (skills/backend/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/backend/)
+- **[backend.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/backend/backend.md)**: Guidelines for FastAPI/Node.js validation patterns, RESTful API design, database ORMs, and authorization.
 
-These live in the workspace as shared source and should be loaded only when the
-current task clearly needs them. Runtime adapters may mirror or link them into
-tool-specific skill folders.
+### 4. [Infra (skills/infra/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/infra/)
+- **[devops.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/infra/devops.md)**: DevOps rules, multi-stage Docker build files, and docker-compose configurations.
 
-## Taste Skill Collection
+### 5. [Engineering (skills/engineering/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/)
+- **[engineering-judgment.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/engineering-judgment.md)**: Minimalist code decisions and karpathy-style coding discipline.
+- **[debugging.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/debugging.md)**: Diagnostic logs and fault isolation steps.
+- **[code-review.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/code-review.md)**: Code review checklists prior to committing code.
+- **`output-skill/`**: Enforcing complete, non-truncated code outputs.
 
-Source:
+### 6. [Data (skills/data/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/data/)
+- Placeholder for data scraping, LLM modeling, and scoring engines.
 
-```text
-https://github.com/Leonxlnx/taste-skill/tree/main/skills
-```
-
-The collection is mirrored into this folder as canonical workspace source and
-into Codex runtime skills at:
-
-```text
-C:\Users\ASUS\.codex\skills\
-```
-
-Use the smallest relevant subset, not the whole collection, for each task.
-
-### `design-taste-frontend`
-
-Workspace source:
-
-```text
-.agents/skills/design-taste-frontend/SKILL.md
-```
-
-Installed in Codex runtime from `Leonxlnx/taste-skill`, path `skills/taste-skill`:
-
-```text
-C:\Users\ASUS\.codex\skills\design-taste-frontend\SKILL.md
-```
-
-Use for:
-
-- landing pages
-- portfolios
-- marketing pages
-- visual redesigns of existing frontend projects
-- anti-generic layout, typography, motion, spacing, and visual polish
-
-Do not use as a blanket default for:
-
-- dashboards
-- dense product UI
-- data tables
-- multi-step workflows
-- admin panels
-
-For those product surfaces, use the project's existing design system or a
-task-specific product UI skill instead.
-
-### Installed Taste Variants
-
-```text
-brandkit
-brutalist-skill
-gpt-tasteskill
-image-to-code-skill
-imagegen-frontend-mobile
-imagegen-frontend-web
-minimalist-skill
-output-skill
-redesign-skill
-soft-skill
-stitch-skill
-taste-skill-v1
-```
-
-Selection guide:
-
-- `redesign-skill`: audit and upgrade an existing website or app without
-  breaking functionality.
-- `image-to-code-skill`: recreate a visual reference, screenshot, or generated
-  mockup in code.
-- `imagegen-frontend-web`: generate separate website section concepts as
-  images before implementation.
-- `imagegen-frontend-mobile`: generate premium mobile app screen concepts.
-- `brandkit`: create brand-system, logo, identity, and visual-world references.
-- `minimalist-skill`, `brutalist-skill`, `soft-skill`, `gpt-tasteskill`: use
-  only when the brief clearly asks for that visual language.
-- `stitch-skill`: create Stitch-oriented design system guidance.
-- `output-skill`: use only for tasks that require exhaustive, unabridged output.
-- `taste-skill-v1`: backward compatibility with the original v1 behavior.
-
-Upstream `skills/taste-skill` is already installed locally as
-`design-taste-frontend`, so it is not duplicated under a second folder name.
+### 7. [Product (skills/product/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/product/)
+- Placeholder for project specs, product requirements mapping, and user journey flows.

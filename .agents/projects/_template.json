@@ -1,0 +1,26 @@
+{
+  "name": "example-project",
+  "path": "D:/path/to/project",
+  "type": "fullstack | backend | frontend | infra | research | other",
+  "status": "active | paused | archived",
+  "stack": {
+    "frontend": "",
+    "backend": "",
+    "database": "",
+    "deployment": ""
+  },
+  "commands": {
+    "install": "",
+    "dev": "",
+    "test": "",
+    "build": "",
+    "lint": "",
+    "deploy": ""
+  },
+  "env": {
+    "example_file": ".env.example",
+    "notes": ""
+  },
+  "rules": [],
+  "notes": ""
+}
