@@ -19,13 +19,33 @@ Every coding brain that opens this workspace should inherit the same working ide
 
 This workspace is home. Target repos are work sites.
 
+## Active Coding Loadout
+
+Load only this shared coding loadout by default:
+
+1. `.agents/plugins/superpowers/`
+2. `.agents/skills/engineering-judgment.md`
+
+Use Superpowers for structured coding workflows such as brainstorming,
+planning, test-driven development, debugging, code review, and verification.
+
+Use Engineering Judgment for coding discipline: clarify ambiguity, keep changes
+small, avoid unrelated edits, and verify before claiming success.
+
+Do not load every skill from Eddie's broader skill library. Load additional
+skills only when Eddie asks for them or the current task clearly requires them.
+
+Superpowers is a coding-workspace workflow plugin, not a global personal
+behavior layer. Do not promote it into Eddie's global prompt or non-coding
+agent contexts.
+
 Before editing a target repo:
 
 1. Read this file.
 2. Read `.agents/state.json`.
 3. Read the target project pointer in `.agents/projects/`.
 4. Change into the target repo.
-5. Read that repo's local `AGENTS.md`, README, and relevant docs.
+5. Read that repo's local `AGENTS.md`, README, `docs/PROJECT_STATE.md`, and relevant docs.
 
 ## Current Target Repos
 
@@ -45,6 +65,8 @@ D:\eddie-projects\tools\hyperframes-video-engine
 - Do not store secrets, tokens, env files, MP4 drafts, generated screenshots, or runtime cache here.
 - Do not edit a target repo just because it is reachable. Wait for Eddie's request or a clear active task.
 - Do not restore from GitHub when Eddie asks for local restore. Use local context first.
+- When editing an existing file, never delete and recreate it; always perform edits in-place within the current file.
+
 
 ## State Files
 
@@ -54,7 +76,9 @@ D:\eddie-projects\tools\hyperframes-video-engine
 .agents/decisions.md        Durable decisions and rationale.
 .agents/projects/*.json     Project pointers and boundaries.
 .agents/handoffs/           Cross-session handoff notes.
+.agents/docs/               Shared operating doctrine and architecture.
 .agents/rules/              Global coding-agent rules.
+.agents/templates/          Reusable briefs, specs, and handoff templates.
 .agents/skills/             Shared skill source.
 .agents/plugins/            Shared plugin source.
 .agents/commands/           Shared command source.

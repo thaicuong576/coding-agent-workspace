@@ -8,7 +8,9 @@ Any coding brain can read this layer:
 .agents/state.json
 .agents/projects/
 .agents/handoffs/
+.agents/docs/
 .agents/rules/
+.agents/templates/
 .agents/skills/
 .agents/plugins/
 .agents/commands/
@@ -16,4 +18,3 @@ Any coding brain can read this layer:
 ```
 
 Tool-specific folders such as `.codex/` and `.claude/` are adapters. They may link to or mirror this canonical source, but they should not become the only source of truth.
-

@@ -6,6 +6,15 @@ __pycache__/
 *.log
 *.pid
 
+# Runtime adapter links/mirrors; canonical source is .agents/
+.codex/commands/
+.codex/plugins/
+.codex/skills/
+.claude/agents/
+.claude/commands/
+.claude/plugins/
+.claude/skills/
+
 # Secrets
 *.env
 *.local
@@ -22,5 +31,11 @@ secrets/
 *.webm
 *.mkv
 *.png
+!.agents/plugins/superpowers/assets/app-icon.png
 *.jpg
 *.jpeg
+
+# Python virtual environment
+venv/
+.venv/
+

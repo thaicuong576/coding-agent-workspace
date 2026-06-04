@@ -1,18 +1,19 @@
 {
   "workspace": "D:\\eddie-agents\\coding-agent-workspace",
   "purpose": "Home base for coding agents working across Eddie's local repos.",
-  "current_focus": "Stabilize a shared coding-agent identity and workspace separation from project repos.",
+  "current_focus": "Integrate AI-driven Alternative Data Engine in JustFactor using Kimi LLM API with local rule-based fallback.",
   "primary_project": {
-    "name": "eddie-team",
-    "path": "D:\\eddie-projects\\eddie-team"
+    "name": "JustFactor",
+    "path": "D:\\eddie-projects\\personal-projects\\JustFactor"
   },
   "known_projects": [
     "eddie-team",
-    "hyperframes-video-engine"
+    "hyperframes-video-engine",
+    "JustFactor"
   ],
   "last_checkpoint": {
-    "date": "2026-05-28",
-    "summary": "Conversation handoff memory was generalized from Codex-specific to shared coding-agent identity. eddie-team was committed and pushed to GitHub at 5b52fd8; this workspace is local-only and has no remote."
+    "date": "2026-06-03",
+    "summary": "Completed LLM integration for Alternative Data Engine in JustFactor backend. The engine queries Kimi LLM (via RamClouds proxy) using a brace-free format to score digital legitimacy, reputation risk, and operating activity, with a robust fallback to local rule-based evaluations when APIs timeout or fail. Removed the masothue.com scraping as it represents KYC rather than alternative data."
   },
   "rules": [
     "This workspace is the coding-agent home.",
@@ -21,6 +22,7 @@
     "Keep project-specific source and docs in the target repo.",
     "Keep shared skills/plugins/commands under .agents as canonical source.",
     "Use .codex and .claude as runtime adapters, not canonical memory.",
-    "Do not store secrets or generated media."
+    "Do not store secrets or generated media.",
+    "When editing an existing file, never delete and recreate it; always perform edits in-place within the current file."
   ]
 }

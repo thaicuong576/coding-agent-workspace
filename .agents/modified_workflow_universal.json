@@ -1,0 +1,716 @@
+{
+  "updatedAt": "2026-05-29T21:18:12.000Z",
+  "createdAt": "2026-05-29T03:07:58.070Z",
+  "id": "NWNN1c55YVgMRQbl",
+  "name": "Daily AI News Video Generator",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        288
+      ],
+      "id": "1725c9c9-d560-4004-a48a-e01d960eb0ab",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {},
+      "id": "limit-node",
+      "name": "Limit to Latest Article",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 15,
+        "unit": "seconds"
+      },
+      "id": "wait-scout-node",
+      "name": "Wait 15 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        304
+      ],
+      "webhookId": "9804af8e-dc2b-429a-9c8f-31c265b2a688"
+    },
+    {
+      "parameters": {
+        "url": "=http://host.docker.internal:3001/v1/scout/jobs/{{ $json.jobId }}",
+        "options": {}
+      },
+      "id": "poll-scout-node",
+      "name": "Poll Scout Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1920,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "completed"
+            }
+          ]
+        }
+      },
+      "id": "is-scout-complete-node",
+      "name": "Is Scout Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "pending"
+            }
+          ]
+        }
+      },
+      "id": "is-scout-pending-node",
+      "name": "Is Scout Pending?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "success",
+              "value": "={{ true }}"
+            },
+            {
+              "name": "kitPath",
+              "value": "={{ $json.kitPath }}"
+            },
+            {
+              "name": "jobId",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "url",
+              "value": "={{ $json.url }}"
+            },
+            {
+              "name": "status",
+              "value": "={{ $json.status }}"
+            },
+            {
+              "name": "type",
+              "value": "={{ $json.type }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "success-output-node",
+      "name": "Success Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://venturebeat.com/category/ai/feed/",
+        "options": {}
+      },
+      "id": "fetch-vb-ai",
+      "name": "Fetch VentureBeat AI",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -512,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "options": {}
+      },
+      "id": "fetch-tc-ai",
+      "name": "Fetch TechCrunch AI",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -512,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.artificialintelligence-news.com/feed/",
+        "options": {}
+      },
+      "id": "fetch-ai-news",
+      "name": "Fetch AI News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -528,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:3001/v1/assets/resolve",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "claude opus 4.8"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        624
+      ],
+      "id": "6d844f9f-53d7-4312-9182-7759bab109a7",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url || $json.body?.url || $json.query?.url || $json.link }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "fetch-raw-html-node",
+      "name": "Fetch Raw HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "h1"
+            },
+            {
+              "key": "description",
+              "cssSelector": "meta[name=\"description\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            },
+            {
+              "key": "paragraphs",
+              "cssSelector": "article p, p",
+              "returnArray": true
+            },
+            {
+              "key": "images",
+              "cssSelector": "article img, img",
+              "returnValue": "attribute",
+              "attribute": "src",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-html-node",
+      "name": "Extract HTML Content",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nlet originalUrl = input.url || input.link || '';\n\nif (!originalUrl) {\n  try {\n    originalUrl = $node['Webhook Trigger']?.json?.body?.url || $node['Webhook Trigger']?.json?.query?.url;\n  } catch (e) {}\n}\n\nif (!originalUrl) {\n  try {\n    originalUrl = $node['Limit to Latest Article']?.json?.link;\n  } catch (e) {}\n}\n\nlet domain = '';\ntry {\n  const urlObj = new URL(originalUrl);\n  domain = `${urlObj.protocol}//${urlObj.hostname}`;\n} catch (e) {}\n\nconst rawParagraphs = input.paragraphs || [];\nconst cleanParagraphs = rawParagraphs\n  .map(p => p.replace(/\\s+/g, ' ').trim())\n  .filter(p => \n    p.length > 60 && \n    !p.toLowerCase().includes('cookie') && \n    !p.toLowerCase().includes('subscribe') && \n    !p.toLowerCase().includes('privacy policy') &&\n    !p.toLowerCase().includes('terms of service') &&\n    !p.toLowerCase().includes('submitting your email') &&\n    !p.toLowerCase().includes('rights reserved')\n  );\n\nconst rawImages = input.images || [];\nconst cleanImages = [...new Set(rawImages)]\n  .map(src => {\n    if (!src) return null;\n    let cleanSrc = src;\n    if (cleanSrc.includes('/_next/image?url=')) {\n      try {\n        const urlParams = new URLSearchParams(cleanSrc.split('?')[1]);\n        const decodedUrl = urlParams.get('url');\n        if (decodedUrl) cleanSrc = decodedUrl;\n      } catch (e) {}\n    }\n    if (cleanSrc.startsWith('/') && !cleanSrc.startsWith('//') && domain) {\n      cleanSrc = `${domain}${cleanSrc}`;\n    } else if (cleanSrc.startsWith('//')) {\n      cleanSrc = `https:${cleanSrc}`;\n    }\n    return cleanSrc;\n  })\n  .filter(src => \n    src && src.startsWith('http') && \n    src.match(/\\.(jpg|jpeg|png|webp)/i) && \n    !src.includes('avatar') && \n    !src.includes('logo') && \n    !src.includes('pixel') && \n    !src.includes('sprite') &&\n    !src.includes('1x1') &&\n    !src.includes('icon')\n  )\n  .map((url, idx) => ({ \n    id: `media-0${idx + 1}`,\n    cdn_url: url\n  }));\n\nreturn {\n  json: {\n    url: originalUrl,\n    title: input.title || 'AI News Update',\n    description: input.description || '',\n    paragraphs: cleanParagraphs,\n    media: cleanImages.slice(0, 5),\n    mediaCount: cleanImages.length\n  }\n};"
+      },
+      "id": "filter-clean-scrape-node",
+      "name": "Filter & Clean Scrape",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.mediaCount }}",
+              "operation": "largerEqual",
+              "value2": 5
+            }
+          ]
+        }
+      },
+      "id": "check-scraped-media-node",
+      "name": "Check Scraped Media",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        912,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:3001/v1/scout",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.url }}"
+            },
+            {
+              "name": "type",
+              "value": "news"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "trigger-scout-fast-node",
+      "name": "Trigger News Scout (Fast Route)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1152,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:3001/v1/scout",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.url }}"
+            },
+            {
+              "name": "type",
+              "value": "news"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "trigger-scout-fallback-node",
+      "name": "Trigger News Scout (Playwright Fallback)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1152,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.wired.com/feed/category/business/latest/rss",
+        "options": {}
+      },
+      "id": "3d87c15f-2d03-46cd-861b-4a834c1a689d",
+      "name": "wired news",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.theverge.com/rss/index.xml",
+        "options": {}
+      },
+      "id": "2d3f241a-43cc-4321-bd89-373e24462f96",
+      "name": "the verge",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "assets-scout",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger-node",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -350,
+        160
+      ],
+      "webhookId": "c1b8c2a9-d3e0-41fb-ad5c-93b7e2916abc"
+    }
+  ],
+  "connections": {
+    "Wait 15 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Poll Scout Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll Scout Status": {
+      "main": [
+        [
+          {
+            "node": "Is Scout Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Scout Complete?": {
+      "main": [
+        [
+          {
+            "node": "Success Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Scout Pending?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Scout Pending?": {
+      "main": [
+        [
+          {
+            "node": "Wait 15 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch VentureBeat AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch TechCrunch AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch AI News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "wired news",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "the verge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch VentureBeat AI": {
+      "main": [
+        [
+          {
+            "node": "Limit to Latest Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch TechCrunch AI": {
+      "main": [
+        [
+          {
+            "node": "Limit to Latest Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch AI News": {
+      "main": [
+        [
+          {
+            "node": "Limit to Latest Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit to Latest Article": {
+      "main": [
+        [
+          {
+            "node": "Fetch Raw HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Raw HTML": {
+      "main": [
+        [
+          {
+            "node": "Extract HTML Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract HTML Content": {
+      "main": [
+        [
+          {
+            "node": "Filter & Clean Scrape",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Clean Scrape": {
+      "main": [
+        [
+          {
+            "node": "Check Scraped Media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Scraped Media": {
+      "main": [
+        [
+          {
+            "node": "Trigger News Scout (Fast Route)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Trigger News Scout (Playwright Fallback)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger News Scout (Fast Route)": {
+      "main": [
+        [
+          {
+            "node": "Wait 15 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger News Scout (Playwright Fallback)": {
+      "main": [
+        [
+          {
+            "node": "Wait 15 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wired news": {
+      "main": [
+        [
+          {
+            "node": "Limit to Latest Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "the verge": {
+      "main": [
+        [
+          {
+            "node": "Limit to Latest Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Raw HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "f4f6499b-1871-4962-8b92-4d6883dd2455",
+  "versionCounter": 18,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-05-29T03:07:58.075Z",
+      "createdAt": "2026-05-29T03:07:58.075Z",
+      "role": "workflow:owner",
+      "workflowId": "NWNN1c55YVgMRQbl",
+      "projectId": "BNGNqxLJghDrAhSt",
+      "project": {
+        "updatedAt": "2025-11-16T10:23:12.561Z",
+        "createdAt": "2025-11-16T10:19:13.141Z",
+        "id": "BNGNqxLJghDrAhSt",
+        "name": "PHÙNG CƯỜNG <cuongphungthai1@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "updatedAt": "2025-11-16T10:19:13.141Z",
+            "createdAt": "2025-11-16T10:19:13.141Z",
+            "userId": "860fa0c2-69ce-4334-8f43-821a80da39fc",
+            "projectId": "BNGNqxLJghDrAhSt",
+            "user": {
+              "updatedAt": "2026-05-29T04:02:40.000Z",
+              "createdAt": "2025-11-16T10:19:12.474Z",
+              "id": "860fa0c2-69ce-4334-8f43-821a80da39fc",
+              "email": "cuongphungthai1@gmail.com",
+              "firstName": "PHÙNG",
+              "lastName": "CƯỜNG",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2025-11-16T10:23:16.633Z",
+                "personalization_survey_n8n_version": "1.116.2"
+              },
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "R50FLgCGhVYO6kCt",
+                "userActivatedAt": 1763801007446,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1765517036587
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-05-29",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": []
+}
