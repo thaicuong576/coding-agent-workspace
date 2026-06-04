@@ -9,6 +9,7 @@ This directory defines the operational scripts, workflows, and protocols (comman
 ## Available Commands
 
 - **[start-fullstack-agent.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/start-fullstack-agent.md)**: Boot up context, identify active target, and prompt for immediate next task.
+- **[register-project.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/register-project.md)**: Used when a new repository path or URL is introduced to auto-register and create scoped folders.
 - **[onboard-target-repo.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/onboard-target-repo.md)**: Link and inspect a new target project repository.
 - **[implement-feature.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/implement-feature.md)**: Plan, implement, and verify a product feature in a target repository.
 - **[fix-bug.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/fix-bug.md)**: Diagnose, reproduce, repair, and verify bugs.

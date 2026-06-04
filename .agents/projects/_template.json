@@ -1,8 +1,10 @@
 {
-  "name": "example-project",
-  "path": "D:/path/to/project",
-  "type": "fullstack | backend | frontend | infra | research | other",
-  "status": "active | paused | archived",
+  "name": "",
+  "slug": "",
+  "path": "",
+  "repo_url": "",
+  "type": "",
+  "status": "active",
   "stack": {
     "frontend": "",
     "backend": "",
@@ -18,9 +20,9 @@
     "deploy": ""
   },
   "env": {
-    "example_file": ".env.example",
+    "example_file": "",
     "notes": ""
   },
-  "rules": [],
+  "last_updated": "",
   "notes": ""
 }

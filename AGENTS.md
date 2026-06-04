@@ -66,8 +66,21 @@ When a command or request is received, activate the appropriate persona, skills,
 - Report precisely what checks were run and what outputs they returned.
 
 ### Handoffs
-- At the end of a session where work remains or context needs preservation, write a markdown file under `.agents/handoffs/YYYY-MM-DD-<topic>-handoff.md`.
+- At the end of a session where work remains or context needs preservation, write a markdown file under `.agents/handoffs/<project-slug>/YYYY-MM-DD-session.md`.
 - Document what is working, what is blocked, next steps, and command lines to resume the work.
+- Always update `.agents/handoffs/<project-slug>/latest.md` with the latest status and task list.
+
+---
+
+## Target Project Registration Rule
+
+When a project path, repository URL, or codebase is provided (via requests like "work on this project", "point to this repo", "open this codebase"):
+
+1. Attempt to locate an existing project pointer under `.agents/projects/`.
+2. If none exists, run the **Register Project** workflow command (`.agents/commands/register-project.md`) to inspect the target repository and populate its metadata.
+3. Never perform extended development work on an unregistered project.
+4. All project metadata must be stored in `.agents/projects/`.
+5. Scoped handoffs and session logs must reside in `.agents/handoffs/<project-slug>/` and `.agents/sessions/<project-slug>/` respectively.
 
 ---
 

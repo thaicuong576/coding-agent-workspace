@@ -1,34 +1,28 @@
 {
   "name": "eddie-team",
+  "slug": "eddie-team",
   "path": "D:\\eddie-projects\\eddie-team",
-  "role": "Agent-office project repo for Edide Branding Company.",
-  "read_first": [
-    "AGENTS.md",
-    "docs/ARCHITECTURE.md",
-    "docs/VIDEO_PRODUCTION_WORKFLOW.md",
-    "docs/GITHUB_REPO_VIDEO_WORKFLOW.md"
-  ],
-  "owned_content": [
-    "company truth",
-    "team rosters",
-    "agent source prompts",
-    "workflow contracts",
-    "Slack manifests",
-    "verification tools",
-    "project-local artifact contracts"
-  ],
-  "do_not_store_here": [
-    "coding-agent global state",
-    "cross-project session logs",
-    "secrets",
-    "runtime cache",
-    "rendered MP4 drafts"
-  ],
-  "common_commands": [
-    "python hive.py build-prompts --force",
-    "python hive.py sync",
-    "python hive.py status",
-    "python hive.py status repo-video"
-  ]
+  "repo_url": "https://github.com/thaicuong576/eddie-team.git",
+  "type": "agent-office",
+  "status": "active",
+  "stack": {
+    "frontend": "CLI / n8n Console",
+    "backend": "Python (hive.py orchestration)",
+    "database": "SQLite / Local JSON caches",
+    "deployment": "Local Python Runtime"
+  },
+  "commands": {
+    "install": "pip install -r requirements.txt",
+    "dev": "python hive.py sync",
+    "test": "python -m pytest tools\\video",
+    "build": "python hive.py build-prompts --force",
+    "lint": "",
+    "deploy": ""
+  },
+  "env": {
+    "example_file": ".env.example",
+    "notes": "Ensure Windows global environment variables like N8N_API_URL are set."
+  },
+  "last_updated": "2026-06-05",
+  "notes": "Do not edit visual compiler internals. All work stays isolated in designated sandbox folders."
 }
-
