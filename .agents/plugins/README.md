@@ -1,19 +1,24 @@
-# Shared Plugins
+# External Plugins Directory
 
-Put workspace-owned plugin source here.
+This directory stores external and untrusted plugin capability packs.
 
-This is where Eddie-specific or pinned third-party plugin source should live when the goal is shared behavior across Codex, Claude Code, Hermes, or other coding agents.
+## Structure Rule
 
-Important distinction:
+Every plugin directory under `plugins/` must adhere to this folder structure:
 
 ```text
-.agents/plugins/
-  Canonical workspace-owned plugin source.
-
-.codex/plugins/ or .claude/plugins/
-  Runtime adapters, mirrors, or links.
-
-C:\Users\ASUS\.codex\plugins\cache\
-  Codex global installed/cache location, not shared source.
+.agents/plugins/<plugin-name>/
+├── source/     - The raw, untouched files of the external plugin
+└── notes.md    - Workspace observations, audit notes, and selective import decisions
 ```
 
+---
+
+## The Plugin Contract
+
+*   **Untrusted by Default**: Plugins are treated as raw material and are never loaded during the default agent boot process.
+*   **Symlinks & Adapters**: Do **not** create symlinks or junctions from your local agent runtimes (e.g. `.codex/plugins/` or `.claude/plugins/`) directly to raw plugin directories. Instead, only import selected components into the canonical `.agents/skills/` or `.agents/commands/` folders, and let runtimes load those approved, workspace-owned assets.
+*   **Import Process**:
+    1.  Place files in `<plugin-name>/source/`.
+    2.  Execute `analyze plugin <plugin-name>` to evaluate capabilities.
+    3.  Execute `import plugin component` to copy and rewrite the selected skill/command into the workspace.

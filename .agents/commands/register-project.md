@@ -37,8 +37,8 @@ Shift context (or run read/search operations) to inspect the target repository's
 4. **Database**: Detect DB drivers, schemas, or container setups.
 5. Populate the matching properties under `stack`, `commands`, and `env` in the JSON descriptor. Update `last_updated` to the current date.
 
-### Step 5: Initialize Folder Structure
-Create the dedicated project-scoped directories under handoffs and sessions:
+### Step 5: Initialize Folder Structure & Session Log
+Create the dedicated project-scoped directories and initial status documents:
 1. **Handoff Folder**: `.agents/handoffs/<project-slug>/`
 2. **Session Folder**: `.agents/sessions/<project-slug>/`
 3. **`latest.md` Handoff**: If `.agents/handoffs/<project-slug>/latest.md` is missing, write an initial status document:
@@ -54,6 +54,34 @@ Create the dedicated project-scoped directories under handoffs and sessions:
    ## Next Steps
    - Inspect code structure and run baseline compilation tests.
    ```
+4. **Initial Session File**: Always create the first session trace log file under `.agents/sessions/<project-slug>/YYYY-MM-DD-HHMM.md` (e.g. `.agents/sessions/bds/2026-06-05-0158.md`). Ensure it contains the following structure:
+   ```markdown
+   # Session: <project-slug> — YYYY-MM-DD HH:MM
+
+   ## Trigger
+   Why this session started (e.g., User pointed to target directory / Register Project workflow started).
+
+   ## Actions Taken
+   * Created project pointer
+   * Updated state.json
+   * Created handoff folder
+   * Created latest.md
+   * Inspected repo stack
+   * Detected commands
+
+   ## Files Created / Modified
+   * `.agents/projects/<slug>.json`
+   * `.agents/handoffs/<slug>/latest.md`
+   * `.agents/sessions/<slug>/YYYY-MM-DD-HHMM.md`
+   * `.agents/state.json`
+
+   ## Current Status
+   Short summary.
+
+   ## Next Actions
+   Concrete next steps.
+   ```
+   Do not stop at creating the sessions directory. Register Project must always create a first session file.
 
 ### Step 6: Set Active Project
 1. Update `.agents/state.json` to set the `"active_project"` field to the registered `<project-slug>`.

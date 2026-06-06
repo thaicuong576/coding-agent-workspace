@@ -1,5 +1,15 @@
 # Session Log
 
+## 2026-06-05
+
+- **Workspace Plugin System & Plugin Contract:**
+  - Established a formal **Plugin Contract** where the workspace is the single canonical source of truth and plugins are treated as untrusted, external capability packs.
+  - Refactored the folder structure for plugins under `.agents/plugins/` to enforce a standard of `<plugin-name>/source/` for raw files and `<plugin-name>/notes.md` for observations and selective import decisions.
+  - Migrated the existing `superpowers` plugin directory by moving its raw files into `.agents/plugins/superpowers/source/` and creating `notes.md`.
+  - Created two new workspace commands under `.agents/commands/`: `analyze-plugin.md` (to evaluate plugin candidates) and `import-plugin.md` (to copy and format-rewrite approved components). Registered both in the commands `README.md`.
+  - Updated the Boot Protocol in `AGENTS.md` to explicitly exclude plugins from normal startup/loading contexts.
+  - Clarified the distinction between **Workspace Knowledge** (trusted) and **Plugin Knowledge** (untrusted until imported) in both `AGENTS.md` and `.agents/README.md`.
+
 ## 2026-06-04
 
 - **Git Remote & Workspace Synchronization:**
@@ -187,6 +197,26 @@ The `.codex` and `.claude` shared adapter subfolders are Windows junctions point
 
 .claude\agents   -> .agents\agents
 .claude\commands -> .agents\commands
+
+## 2026-06-06
+
+- **Plugin Comparison & Recommendations**:
+  - Researched all installed plugins (`superpowers`) and imported skills (`agent-skill`, `claude-seo`, and global `vendor_imports`).
+  - Compared and ranked candidates for scraping, authentication, and VPS provisioning/deployment skills.
+  - Recommended `playwright` for `skills/data/scraping.md`, `security-and-hardening` for `skills/backend/auth.md`, and identified a gap for `skills/infra/vps-provisioning.md` (recommending a custom-designed skill).
+  - Authored a comprehensive comparison report artifact `plugin_comparison_report.md`.
+- **Decoupled Repo Discovery & Repository Evaluation Skills**:
+  - Upgraded `.agents/skills/meta/github-repo-discovery.md` to focus strictly on search planning, query generation, source prioritization, and candidate collection.
+  - Created `.agents/skills/meta/repository-evaluation.md` as a standalone meta-skill containing evaluation quality signals, red flags, and the `External Candidate Evaluation` reporting schema.
+  - Registered the new meta-skill in both `.agents/skills/meta/README.md` and `.agents/skills/README.md`.
+- **External-First Discovery & Data Scraping Skill**:
+  - Refactored `.agents/skills/meta/github-repo-discovery.md` to enforce the **External-First Discovery** model, establishing a new search prioritization sequence and mandatory external scouting for high-velocity domains.
+  - Executed the new model to scout external web scraping candidates (Crawlee, Firecrawl, Browser Use, Stagehand) to discover their capabilities.
+  - Created `.agents/skills/data/scraping.md` as the canonical scraping skill, incorporating programmatic Playwright (Python/Node.js), Firecrawl, Browser Use, Stagehand, and defensive bypass patterns.
+  - Refactored `.agents/skills/data/scraping.md` to Senior Staff Engineer standards, removing basic tutorial scripts and adding decision matrices, queue-worker patterns, default settings, and failure mitigation tactics.
+  - Updated the global skills index in `.agents/skills/README.md` to register the new skill.
+
+
 .claude\plugins  -> .agents\plugins
 .claude\skills   -> .agents\skills
 ```

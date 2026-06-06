@@ -11,7 +11,7 @@ Any coding agent (Claude, Codex, Antigravity) reads this layer to align on menta
 We organize the workspace using clear, easy-to-explain concepts:
 
 1. **Personas (Who I am)**: Located in [personas/](file:///d:/eddie-agents/coding-agent-workspace/.agents/personas/). Defines identity, mindset, behavioral boundaries, and communication style.
-2. **Skills (What I know)**: Located in [skills/](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/). Technical capabilities organized into a hierarchy (design, frontend, backend, infra, engineering, data, product).
+2. **Skills (What I know)**: Located in [skills/](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/). Technical capabilities organized into a hierarchy (design, frontend, backend, infra, engineering, data, product, meta).
 3. **Commands (How I work)**: Located in [commands/](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/). Step-by-step developer scripts and workflow procedures (e.g. implement feature, fix bug).
 4. **Recipes (How skills and commands combine)**: Located in [recipes/](file:///d:/eddie-agents/coding-agent-workspace/.agents/recipes/). Multi-step coordinate patterns to achieve bigger outcomes (e.g. schema refactoring).
 5. **Projects (Where real product repos live)**: Located in [projects/](file:///d:/eddie-agents/coding-agent-workspace/.agents/projects/). Config files containing paths, framework specs, env settings, and commands for target repositories.
@@ -19,9 +19,16 @@ We organize the workspace using clear, easy-to-explain concepts:
 7. **Handoffs (Session handoffs)**: Located in [handoffs/](file:///d:/eddie-agents/coding-agent-workspace/.agents/handoffs/). Scoped strictly by project (`handoffs/<project-slug>/`). Contains active status tasks and chronological logs.
 8. **Sessions (Session logs)**: Located in [sessions/](file:///d:/eddie-agents/coding-agent-workspace/.agents/sessions/). Scoped strictly by project (`sessions/<project-slug>/`). Stores detailed terminal traces and run records.
 9. **Templates (Document blueprints)**: Located in [templates/](file:///d:/eddie-agents/coding-agent-workspace/.agents/templates/). Standard document templates (e.g. `PROJECT_STATE.md`).
-10. **Plugins (Executable helpers)**: Located in [plugins/](file:///d:/eddie-agents/coding-agent-workspace/.agents/plugins/). Executable scripts and helper libraries (e.g. `superpowers`).
+10. **Plugins (External capability packs)**: Located in [plugins/](file:///d:/eddie-agents/coding-agent-workspace/.agents/plugins/). External capability modules (e.g. `superpowers`) structured with a `source/` folder and `notes.md` file. Untrusted and ignored until components are explicitly audited and imported.
 11. **Docs (Long-form explanations)**: Located in [docs/](file:///d:/eddie-agents/coding-agent-workspace/.agents/docs/). Conceptual manuals and logs of architectural decisions (`decisions.md`).
 12. **Scratch (Temporary experiments)**: Located in [scratch/](file:///d:/eddie-agents/coding-agent-workspace/.agents/scratch/). Temporary messy files and one-off diagnostic scripts.
+
+---
+
+## Workspace Knowledge vs. Plugin Knowledge
+
+- **Workspace Knowledge (Trusted)**: Approved rules, personas, skills, and commands. This is the canonical source of truth for the agent.
+- **Plugin Knowledge (Untrusted)**: Raw external files located under `plugins/<plugin-name>/source/`. These are not loaded automatically and must be explicitly imported and rewritten into workspace format to become part of the workspace knowledge.
 
 ---
 
@@ -37,7 +44,7 @@ We organize the workspace using clear, easy-to-explain concepts:
 - **`handoffs/`**: Project-scoped handoff logs (e.g. `handoffs/<project-slug>/latest.md`).
 - **`sessions/`**: Project-scoped detailed session log folders.
 - **`templates/`**: Generic template blueprints.
-- **`plugins/`**: Superpowers tools.
+- **`plugins/`**: External untrusted capability folders containing `source/` and `notes.md`.
 - **`docs/`**: Permanent design doctrines and architecture decision records.
 - **`scratch/`**: Messy local test scripts.
 

@@ -36,7 +36,14 @@ Contains design, branding, and visual-taste guidelines:
 - **`output-skill/`**: Enforcing complete, non-truncated code outputs.
 
 ### 6. [Data (skills/data/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/data/)
-- Placeholder for data scraping, LLM modeling, and scoring engines.
+- **[scraping.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/data/scraping.md)**: Web scraping, crawling, and browser automation using Playwright, Crawlee, Firecrawl, Browser Use, and Stagehand in Python or Node.js.
 
 ### 7. [Product (skills/product/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/product/)
 - Placeholder for project specs, product requirements mapping, and user journey flows.
+
+### 8. [Meta (skills/meta/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/meta/)
+Tools and procedures that govern how the workspace discovers, evaluates, and imports new technical skills safely:
+- **`knowledge-gap-analysis.md`**: Classifies capability deficiencies.
+- **`github-repo-discovery.md`**: Plans searches, generates queries, prioritizes sources, and collects candidates.
+- **`repository-evaluation.md`**: Vets reference repositories and plugins.
+- **`knowledge-import.md`**: Safely ingests knowledge into canonical skills.

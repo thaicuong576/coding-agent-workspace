@@ -17,11 +17,26 @@ When you open this workspace in any coding agent (Claude, Codex, Antigravity, et
 
 ## Boot Protocol
 
-Whenever you start a session in this repository:
-1. **Locate the Target**: Read `.agents/state.json` to identify the active project or look for a project pointer configuration in `.agents/projects/`.
-2. **Load Shared Context**: Load your active persona from `.agents/personas/`, global rules from `.agents/rules/`, and domain skills from `.agents/skills/` depending on the type of work to be done.
-3. **Establish Boundaries**: Do not create or edit product files inside this workspace. All product coding must happen within target repositories.
-4. **Transition to Work Site**: Once the target repo is selected, shift your operational focus (and shell context, if running commands) to the target repository's path.
+Whenever starting a session in this repository, follow this deterministic boot sequence:
+1. **Read Root Guidelines**: Read [AGENTS.md](file:///d:/eddie-agents/coding-agent-workspace/AGENTS.md).
+2. **Read Directory Map**: Read [.agents/README.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/README.md).
+3. **Read Workspace State**: Read [.agents/state.json](file:///d:/eddie-agents/coding-agent-workspace/.agents/state.json) to retrieve the active project pointer.
+4. **Load Active Persona**: Read [.agents/personas/fullstack-builder.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/personas/fullstack-builder.md).
+5. **Load Mandatory Workspace Rules**: Load and register the required laws:
+   * [.agents/rules/repo-boundaries.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/rules/repo-boundaries.md)
+   * [.agents/rules/coding.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/rules/coding.md)
+   * [.agents/rules/verification.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/rules/verification.md)
+6. **Load Core Engineering Skills**: Read the foundational skills:
+   * [.agents/skills/engineering/engineering-judgment.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/engineering-judgment.md)
+   * [.agents/skills/engineering/debugging.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/debugging.md)
+   * [.agents/skills/engineering/code-review.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/code-review.md)
+7. **Determine Active Project Status**:
+   * **If active_project is NOT null**: Load ONLY the matching project configuration (e.g., `.agents/projects/<project-slug>.json`) and its latest handoff (`.agents/handoffs/<project-slug>/latest.md`). Do not load/inspect any other projects.
+   * **If active_project IS null**: List registered projects with a short summary, and request project activation. Do not read handoffs/sessions or load project details deeply.
+
+**Plugin Exception**: External plugins (located under `.agents/plugins/`) are strictly untrusted external capabilities. They must **never** be loaded during normal startup or boot sequences. They are only loaded/analyzed explicitly during `analyze plugin` or `import plugin` commands, or when a tool specifically requires them. The core agent boot protocol must only load trusted workspace rules, persona, and core skills.
+
+Always output a startup verification checklist confirming these rules and skills have been loaded before executing any commands or editing target code.
 
 ---
 
@@ -69,6 +84,15 @@ When a command or request is received, activate the appropriate persona, skills,
 - At the end of a session where work remains or context needs preservation, write a markdown file under `.agents/handoffs/<project-slug>/YYYY-MM-DD-session.md`.
 - Document what is working, what is blocked, next steps, and command lines to resume the work.
 - Always update `.agents/handoffs/<project-slug>/latest.md` with the latest status and task list.
+---
+
+## Session Contract
+
+1. **Every meaningful project action must be logged**: Any registration, activation, onboarding, or significant analysis/updates on a project must be recorded.
+2. **Project-scoped session files live under `.agents/sessions/<project-slug>/`**: Each session must create or update a file following the format `YYYY-MM-DD-HHMM.md`.
+3. **Creating the folder alone is not sufficient**: Simply initializing the directory structure does not fulfill the session log requirement.
+4. **Registration/onboarding must create the first session file**: The very first time a project is onboarded or registered, a session log file must be generated immediately.
+5. **Handoffs vs. Sessions**: Handoffs (`.agents/handoffs/`) summarize current state and checklists for future sessions; sessions (`.agents/sessions/`) record detailed work history, terminal runs, diagnostics, and step-by-step actions taken.
 
 ---
 
@@ -109,7 +133,8 @@ When a project path, repository URL, or codebase is provided (via requests like 
 │   ├── infra/              - DevOps & deployment configurations
 │   ├── engineering/        - Debugging, testing, and review guidelines
 │   ├── data/               - Data scraping, modeling, and scoring (placeholder)
-│   └── product/            - Specs & product requirements (placeholder)
+│   ├── product/            - Specs & product requirements (placeholder)
+│   └── meta/               - Self-improvement, repository discovery, imports
 ├── commands/               - Workspace Commands (How I work)
 │   ├── start-fullstack-agent.md
 │   ├── onboard-target-repo.md
@@ -130,7 +155,10 @@ When a project path, repository URL, or codebase is provided (via requests like 
 │   ├── README.md           - Session info
 │   └── session-log.md      - Cumulative action log
 ├── templates/              - Reusable document and file templates
-├── plugins/                - Executable tools/helpers (e.g. superpowers)
+├── plugins/                - External capability packs (untrusted until imported)
+│   └── <plugin-name>/
+│       ├── source/         - Original plugin contents
+│       └── notes.md        - Workspace observations and import decisions
 ├── docs/                   - Long-form explanations and decisions
 │   ├── digital-product-engineering-os.md
 │   └── decisions.md        - Log of architectural decisions
@@ -138,3 +166,29 @@ When a project path, repository URL, or codebase is provided (via requests like 
     ├── README.md           - Scratch definition
     └── test_*.js           - Local diagnostic tests
 ```
+
+---
+
+## Workspace Knowledge vs. Plugin Knowledge
+
+To protect the integrity of the workspace and prevent architectural drift, a strict boundary is enforced:
+
+*   **Workspace Knowledge (Approved & Trusted)**: All rules, personas, skills, and commands residing in the root `.agents/` subdirectories (except `plugins/`). This is the sole source of truth that governs agent actions and target code development.
+*   **Plugin Knowledge (External & Untrusted)**: Capabilities and templates imported from external sources (such as ECC, Superpowers, MCP servers, or community packs) that sit under `.agents/plugins/`. These are treated as raw ideas/candidates and are never active or trusted by default.
+
+---
+
+## The Plugin Contract & Lifecycle
+
+External plugins must strictly conform to the **Plugin Contract** and progress through a structured 4-stage lifecycle before their contents can be utilized in the workspace.
+
+### The Plugin Contract
+*   **Rules Override Prevention**: Plugins may **never** automatically override or modify workspace rules, personas, workspace state, project registries, sessions, or handoff logs. Workspace rules always win.
+*   **Zero Leakage**: Plugin architecture conventions must not leak into the workspace structure.
+*   **No Auto-loading**: Plugins are excluded from the default boot context. They are only loaded during analysis, import, or explicit command invocation.
+
+### The 4-Stage Lifecycle
+1.  **Stage 1: Install**: The plugin is fetched and placed under `.agents/plugins/<plugin-name>/source/`. It is completely untrusted and ignored by the agent's runtime.
+2.  **Stage 2: Analyze**: Run `analyze plugin <plugin-name>` to inspect the source. The agent evaluates the plugin's components against existing workspace structures and logs recommendation decisions to `.agents/plugins/<plugin-name>/notes.md`.
+3.  **Stage 3: Import**: Run `import plugin component` to copy a recommended component (e.g. a specific skill) into the canonical workspace folder. During copy, the file is fully rewritten to align with the workspace format and style conventions (stripping telemetry, overrides, or redundant rules).
+4.  **Stage 4: Workspace Ownership**: Once imported, the workspace version becomes canonical. The workspace owns the imported capability. Future plugin source updates do not automatically sync or overwrite the workspace copy.

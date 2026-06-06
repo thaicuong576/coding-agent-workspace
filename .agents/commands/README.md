@@ -16,3 +16,5 @@ This directory defines the operational scripts, workflows, and protocols (comman
 - **[review-code.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/review-code.md)**: Audit file sets, styles, and test validations.
 - **[prepare-deploy.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/prepare-deploy.md)**: Compile build artifacts and verify environment keys.
 - **[handoff.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/handoff.md)**: Suspend current session, serialize state, and write chronologically ordered handoff notes.
+- **[analyze-plugin.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/analyze-plugin.md)**: Scan untrusted external plugin directories and output recommended component imports.
+- **[import-plugin.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/commands/import-plugin.md)**: Selectively import, format-align, and assert workspace ownership over external plugin capabilities.
