@@ -1,8 +1,8 @@
 # Latest Status: repurpose-videos
 
-**Last Updated**: 2026-06-09 10:55 +07:00
+**Last Updated**: 2026-06-09 16:00 +07:00
 
-## Current Status: Local Docker Service Active, V3 Completed
+## Current Status: Local Docker Service Active, V3 & n8n Poller Looping Configured
 
 The `repurpose-videos` project is active at:
 
@@ -161,7 +161,7 @@ A full end-to-end sample video run was successfully executed by the user on 'vid
 
 - [x] Run a fresh end-to-end sample through CLI and dashboard.
 - [x] Launch and run the microservice inside a Docker container.
-- [ ] Connect and test from n8n workflows.
+- [x] Connect and test from n8n workflows.
 - [ ] Review and commit the intended V3/deploy-readiness files.
 - [ ] Decide whether `tools/dev/` should stay in the production repository long-term.
 - [ ] Add GPU-specific deployment notes if deploying Whisper/EasyOCR/Demucs with NVIDIA acceleration.
