@@ -60,6 +60,32 @@ Do not rely on GitHub stars alone. Prioritize finding the best current external 
     *   *Architecture quality* (clean abstraction, solid types, standard configurations).
     *   *Ecosystem momentum* (recent releases, star velocity, active forums).
 
+### Tool-Based Scouting with GitHub PAT
+To bypass rate limits and retrieve rich repository metadata, use the workspace's authenticated search helper `.agents/scripts/github-research.ps1`. This script loads the local `GITHUB_TOKEN` from `.agents/secrets/github.env` and runs your target command with authenticated permissions.
+
+**Usage Syntax**:
+```powershell
+powershell -File .agents/scripts/github-research.ps1 gh <command>
+```
+
+**Common Research Commands**:
+1.  **Search for high-quality repositories**:
+    ```powershell
+    powershell -File .agents/scripts/github-research.ps1 gh search repos "web scraping language:python stars:>100 pushed:>2025-01-01" --limit 5 --json url,fullName,description,stargazersCount,updatedAt
+    ```
+2.  **Search for specific code patterns (e.g. imports or library usage)**:
+    ```powershell
+    powershell -File .agents/scripts/github-research.ps1 gh search code "import faster_whisper" --language python --limit 5 --json path,repository
+    ```
+3.  **Inspect repository README and details**:
+    ```powershell
+    powershell -File .agents/scripts/github-research.ps1 gh repo view owner/repo
+    ```
+4.  **List repository directories/files without cloning**:
+    ```powershell
+    powershell -File .agents/scripts/github-research.ps1 gh api repos/owner/repo/contents/src
+    ```
+
 ### Step 4: Source Prioritization Order
 When executing searches, strictly follow this priority hierarchy:
 1.  **Official Documentation**: The canonical API references, configuration guides, and security policies.
@@ -78,5 +104,6 @@ Collect candidate details in a structured log:
 ---
 
 ## Hand Off to Evaluation
-Once external and local candidates have been discovered and collected, hand them off to the [Repository & Candidate Vetting (repository-evaluation.md)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/meta/repository-evaluation.md) skill to perform the final safety, security, and quality audit.
+Once external and local candidates have been discovered and collected, hand them off to the [Repository & Candidate Vetting (repository-evaluation.md)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/research/repository-evaluation.md) skill to perform the final safety, security, and quality audit.
+
 

@@ -1,5 +1,20 @@
 # Session Log
 
+## 2026-06-07
+
+- **Business Analysis (BA) Process Skill Integration**:
+  - Created `.agents/skills/product/ba-process/SKILL.md` defining the 8-point analysis framework (Goal, Input, Output, Actors, Steps, Dependencies, Acceptance Criteria, Edge Cases).
+  - Registered the new Product & BA task loading policy and Fullstack Agent Mode capability module in `AGENTS.md`.
+  - Added the BA process skill to the Product subcategory in `.agents/skills/README.md`.
+  - Added Business & Product Analysis capabilities to `.agents/personas/fullstack-builder.md`.
+  - Updated `.agents/manifest.json`'s skills description to include the product folder.
+
+- **Boot Protocol Rule Update**:
+  - Updated `AGENTS.md` to include `planning.md` in the Step 5 mandatory boot protocol rules list to ensure planning rules are loaded before execution.
+
+- **Session and Handoff Log Scoping Rules**:
+  - Added strict scoping guidelines to `AGENTS.md` under both `Handoffs` and `Session Contract` sections, enforcing that target project-scoped sessions and handoffs must only document changes relative to the target codebase. Global rule modifications and workspace optimizations are now strictly directed to the global `session-log.md`.
+
 ## 2026-06-05
 
 - **Workspace Plugin System & Plugin Contract:**
@@ -228,3 +243,54 @@ Follow-up for runtime activation: uninstall or disable the global Codex Superpow
 ```text
 D:\eddie-agents\coding-agent-workspace\.agents\plugins\superpowers
 ```
+
+## 2026-06-08
+
+- **Workspace-local GitHub research token setup**:
+  - Added `.agents/scripts/github-research.ps1` to load `.agents/secrets/github.env` and expose the token as `GITHUB_TOKEN` and `GH_TOKEN` for a single GitHub research command.
+  - Added `.agents/secrets/` to `.gitignore` and created a local placeholder `.agents/secrets/github.env` outside git tracking.
+  - Verified `.agents/secrets/github.env` is ignored and the helper rejects placeholder tokens before calling GitHub.
+- **GitHub PAT Integration & Research/Meta Skill Cleanups**:
+  - Validated the new user-provided GitHub PAT in `.agents/secrets/github.env` via `github-research.ps1` and GitHub CLI, confirming successful authentication.
+  - Integrated `github-research.ps1` helper commands into `.agents/skills/research/github-repo-discovery.md` to establish tool-based, authenticated scouting.
+  - Corrected directory paths and links across the workspace (including `AGENTS.md`, `.agents/README.md`, `.agents/skills/README.md`, and research READMEs) to map files to the renamed `skills/research/` directory (previously `meta/`).
+- **Project Registration & V1 MVP Implementation (repurpose-videos)**:
+  - Registered the new video repurposer project in `.agents/projects/repurpose-videos.json` and created handoffs and sessions directories.
+  - Initialized `repurpose.py`, `requirements.txt`, `.env.example`, `.env` (with Kimi credentials), and `README.md` in `D:\eddie-projects\personal-projects\repurpose-videos`.
+  - Created `.venv` virtual environment and successfully resolved coordinate boundary bugs and terminal Unicode encoding errors during verification runs.
+  - Refined subtitle removal quality by lowering the EasyOCR confidence threshold (from 0.3 to 0.05) to successfully detect stylized Chinese subtitles and added options for box/blur masking modes.
+  - Implemented translation retry logic with exponential backoff and dynamic timeout calculation based on subtitle size (minimum 120s) to handle transient timeouts during reasoning model (`kimi-k2.6`) runs.
+  - Profiled alternative translation models (`minimax-m2.7-highspeed` at 5.78s, `gemini-3.5-flash-low` at 3.25s) vs `kimi-k2.6` (31.19s) and recommended shifting to high-speed, non-reasoning models to avoid formatting reasoning loops.
+  - Configured `LLM_MODEL=MiniMax-M3` in `.env` and verified the complete pipeline runs successfully and extremely fast (less than 7s for translation).
+- **2026-06-08-1125**:
+  - Implemented Universal Subtitle Detection in `repurpose.py` using full-frame EasyOCR scanning combined with static watermark frequency filtering, size limits, and horizontal centering checks.
+  - Implemented Dynamic Local Segment Masking (contour mode) which detects characters' high-contrast contours, dilates horizontally to form word blocks, and applies Gaussian blur *only* to those coordinates frame-by-frame, leaving all other elements (like side charts and watermarks) 100% untouched.
+  - Updated audio muxing and verified the entire pipeline end-to-end using the new default `contour` masking.
+  - Added the **Documentation & Plan Storage Rule** to `planning.md` to mandate storing implementation plans, design files, and specifications directly inside target repositories (under `docs/`) for version control alignment and cross-session persistence.
+- **2026-06-08-1755 (Refactoring & Architecture Rule Upgrades)**:
+  - Refactored monolithic files in `repurpose-videos` into specialized processors (`audio_processor.py`, `subtitle_processor.py`, `video_processor.py`) and standard templates.
+  - Updated `coding.md` to establish **Modular Design & Single Responsibility** and **Clean Repository Structure & Flow** rules to prevent logic cramming in single files.
+  - Updated `planning.md` to add **Pre-flight & Architecture Gates**, introducing **API Integration Pre-flight Checks** (running simple standalone test scripts to verify headers/payload formats), **Parametric Experimentation & Visual Baselines** (using param-sweeping scripts to generate visual proofs for parameters), and **Proactive Modularity Gates** (pre-planning refactoring when files exceed 300-400 lines).
+
+- **2026-06-08-2320 (Skill Additions & Taxonomy Registration)**:
+  - Registered two new developer skills in the workspace index `.agents/skills/README.md`: `service-packaging` under the Infra subcategory and `delivery-mode` under the Product subcategory.
+  - Verified and loaded the newly updated skills: `service-packaging/SKILL.md` (which governs packaging standard workflows and containerization requirements) and `delivery-mode/SKILL.md` (which provides a decision framework for selecting script, service, app, or hybrid architectures).
+
+- **2026-06-08-2340 (Workspace Directory Cleanup)**:
+  - Identified and removed unused folders `backend/` (containing only empty `tests/` folder) and `venv/` (workspace-level python virtual environment leftover) from the workspace root.
+  - Verified that all workspace references to `backend` and `venv` are either scoped to the canonical `.agents/skills/backend/` capability module, standard `.gitignore` safety ignores, or project-specific `.venv` settings in external repositories, requiring no file link updates.
+
+- **2026-06-08-2345 (Project Metadata Consolidation)**:
+  - Consolidated three overlapping directories (`projects/`, `handoffs/`, and `sessions/`) into a single unified directory structure: `.agents/projects/<project-slug>/`.
+  - Moved target configurations, active handoffs (`latest.md`), and chronological session logs into project-scoped directories (e.g., `.agents/projects/repurpose-videos/`).
+  - Moved the global workspace session log to `.agents/projects/session-log.md`.
+  - Deleted the redundant `.agents/handoffs/` and `.agents/sessions/` directories.
+  - Updated all command blueprints (`register-project.md`, `onboard-target-repo.md`, `start-fullstack-agent.md`, `handoff.md`), root guides (`AGENTS.md`, `.agents/README.md`, `.agents/projects/README.md`), and `.agents/manifest.json` load policies to reflect the new consolidated project taxonomy.
+
+## 2026-06-09
+
+- **Product & Business Analysis Skills Research**:
+  - Scouted the GitHub ecosystem and curated repositories (`addyosmani/agent-skills`, `phuryn/pm-skills`, `deanpeters/Product-Manager-Skills`, `VoltAgent/awesome-agent-skills`) for product and business analysis skills.
+  - Cataloged high-priority skills including `spec-driven-development`, `planning-and-task-breakdown`, `idea-refine`, `create-prd`, `user-story-splitting`, and `pre-mortem`.
+  - Saved a detailed analysis to `.agents/docs/product-skills-research.md` identifying gaps in our current local `ba-process` and outlining an upgrade path.
+  - Upgraded `.agents/skills/product/ba-process/SKILL.md` by directly merging the key features of `spec-driven-development` (Assumptions Gate & reframed success criteria), `planning-and-task-breakdown` (vertical slicing & checkpoints), and `user-story-splitting` (XS/S/M/L sizing & splitting patterns) into a single, cohesive local Business Analysis framework.

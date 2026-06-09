@@ -1,0 +1,29 @@
+{
+  "name": "repurpose-videos",
+  "slug": "repurpose-videos",
+  "path": "D:\\eddie-projects\\personal-projects\\repurpose-videos",
+  "repo_url": "https://github.com/thaicuong576/repurpose-videos",
+  "type": "video-repurposer",
+  "status": "active",
+  "stack": {
+    "frontend": "None (Internal API Service & CLI)",
+    "backend": "Python / FastAPI",
+    "database": "SQLite (TBD)",
+    "deployment": "Local Service"
+  },
+  "commands": {
+    "install": "pip install -r requirements.txt",
+    "dev": "python repurpose.py -i <input_video.mp4>",
+    "test": "python repurpose.py --help",
+    "build": "",
+    "lint": "",
+    "deploy": ""
+  },
+  "env": {
+    "example_file": ".env.example",
+    "notes": "Uses LLM settings and credentials matching JustFactor Kimi backend."
+  },
+  "last_updated": "2026-06-08",
+  "notes": "Building video repurposing tool for Douyin."
+}
+

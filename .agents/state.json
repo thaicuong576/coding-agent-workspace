@@ -8,9 +8,10 @@
     "verify_before_claiming_done",
     "respect_repo_boundaries"
   ],
-  "active_project": null,
+  "active_project": "repurpose-videos",
   "known_projects": [
     "eddie-team",
-    "hyperframes-video-engine"
+    "hyperframes-video-engine",
+    "repurpose-videos"
   ]
 }

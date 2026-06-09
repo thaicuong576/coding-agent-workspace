@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "workspace": "Eddie's Coding Agent Workspace",
+  "load_policies": {
+    "always_load": "Load immediately during the Boot Protocol.",
+    "load_on_demand": "Load only when the active task requires this folder's contents.",
+    "disabled_by_default": "Never load during startup. Write-only or accessed via specific tools/commands."
+  },
+  "directories": {
+    "rules": {
+      "status": "CORE",
+      "policy": "always_load",
+      "description": "Workspace-wide security boundaries, coding standards, and verification checklists."
+    },
+    "personas": {
+      "status": "CORE",
+      "policy": "always_load",
+      "description": "Active persona configuration (specifically fullstack-builder.md to govern behavior)."
+    },
+    "projects": {
+      "status": "CORE",
+      "policy": "always_load",
+      "description": "Project-specific configurations, scoped handoffs, and detailed session logs."
+    },
+    "skills": {
+      "status": "CORE_DORMANT_MIXED",
+      "policy": "load_on_demand",
+      "description": "Technical capability hierarchy. Core engineering skills (engineering-judgment, debugging, code-review) are always loaded; frontend, backend, infra, design, data, product, and research are loaded only on demand.",
+      "exceptions": {
+        "skills/engineering/engineering-judgment.md": "always_load",
+        "skills/engineering/debugging.md": "always_load",
+        "skills/engineering/code-review.md": "always_load"
+      }
+    },
+    "commands": {
+      "status": "DORMANT",
+      "policy": "load_on_demand",
+      "description": "Procedural step-by-step developer scripts and workflow playbooks."
+    },
+    "docs": {
+      "status": "DORMANT",
+      "policy": "load_on_demand",
+      "description": "Long-form conceptual manuals, reference documentation, and architectural decisions."
+    },
+    "templates": {
+      "status": "DORMANT",
+      "policy": "load_on_demand",
+      "description": "Standard document templates and blueprints."
+    },
+    "recipes": {
+      "status": "DISABLED",
+      "policy": "disabled_by_default",
+      "description": "Deprecated multi-step coordination patterns. Consolidated into commands."
+    },
+    "plugins": {
+      "status": "DISABLED",
+      "policy": "disabled_by_default",
+      "description": "Untrusted external plugins. Excluded from loading until explicitly analyzed and imported."
+    },
+    "scratch": {
+      "status": "DISABLED",
+      "policy": "disabled_by_default",
+      "description": "Temporary scratchpad scripts and mess files."
+    }
+  }
+}

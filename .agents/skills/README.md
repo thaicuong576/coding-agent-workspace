@@ -28,6 +28,7 @@ Contains design, branding, and visual-taste guidelines:
 
 ### 4. [Infra (skills/infra/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/infra/)
 - **[devops.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/infra/devops.md)**: DevOps rules, multi-stage Docker build files, and docker-compose configurations.
+- **`service-packaging/`**: Converting a script, repository, workflow, or tool into a deployable backend service.
 
 ### 5. [Engineering (skills/engineering/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/)
 - **[engineering-judgment.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/engineering-judgment.md)**: Minimalist code decisions and karpathy-style coding discipline.
@@ -39,11 +40,13 @@ Contains design, branding, and visual-taste guidelines:
 - **[scraping.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/data/scraping.md)**: Web scraping, crawling, and browser automation using Playwright, Crawlee, Firecrawl, Browser Use, and Stagehand in Python or Node.js.
 
 ### 7. [Product (skills/product/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/product/)
-- Placeholder for project specs, product requirements mapping, and user journey flows.
+- **`ba-process/`**: Business Analysis (BA) and product analysis skill defining standard frameworks (goals, inputs/outputs, actors, steps, dependencies, acceptance criteria, and edge cases) for scoping features or projects.
+- **`delivery-mode/`**: Deciding whether a project should be built as a CLI/Script, Backend Service, Frontend App, or Hybrid System.
 
-### 8. [Meta (skills/meta/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/meta/)
+### 8. [Research (skills/research/)](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/research/)
 Tools and procedures that govern how the workspace discovers, evaluates, and imports new technical skills safely:
 - **`knowledge-gap-analysis.md`**: Classifies capability deficiencies.
 - **`github-repo-discovery.md`**: Plans searches, generates queries, prioritizes sources, and collects candidates.
 - **`repository-evaluation.md`**: Vets reference repositories and plugins.
 - **`knowledge-import.md`**: Safely ingests knowledge into canonical skills.
+

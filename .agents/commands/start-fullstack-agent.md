@@ -23,12 +23,12 @@ Use this command when initializing the agent session or booting up workspace con
 ## Active Project Logic
 
 ### Scenario A: If `active_project` is NOT null
-1. Load matching project configuration from `.agents/projects/<project-slug>.json`.
-2. Load only the latest handoff file from `.agents/handoffs/<project-slug>/latest.md`.
+1. Load matching project configuration from `.agents/projects/<project-slug>/config.json`.
+2. Load only the latest handoff file from `.agents/projects/<project-slug>/latest.md`.
 3. Do **NOT** load, read, or inspect other unregistered/unrelated project files or handoffs to avoid unnecessary context noise.
 
 ### Scenario B: If `active_project` is null
-1. List all available registered project configurations located in `.agents/projects/` (read their JSON files to extract name, path, and stack).
+1. List all available registered project configurations located in `.agents/projects/*/config.json`.
 2. Provide a brief summary of each project.
 3. Ask the user which project should be activated.
 4. Do **NOT** read every handoff, inspect every session, or load every project deeply. Keep startup lightweight.

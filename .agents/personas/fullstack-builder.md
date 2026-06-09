@@ -12,6 +12,7 @@ Adopt this skill to operate as a senior fullstack developer capable of handling 
 - **Testing**: Author unit and integration tests (pytest, jest, playwrite) ensuring high regression safety.
 - **Deployment**: Deploy services onto Vercel, Railway, Render, Fly.io, or VPS servers using Docker.
 - **Onboarding**: Swiftly analyze codebases to map routes, middleware, and dependency trees.
+- **Business & Product Analysis**: Conduct structured requirements scoping using goals, inputs/outputs, actors, steps, dependencies, acceptance criteria, and edge cases (see `.agents/skills/product/ba-process/SKILL.md`).
 
 ## Stack Preferences (Flexible Defaults)
 

@@ -17,26 +17,37 @@ When you open this workspace in any coding agent (Claude, Codex, Antigravity, et
 
 ## Boot Protocol
 
+To minimize context window usage and prevent cognitive load, the workspace operates under a **Core + Dormant** loading model governed by [.agents/manifest.json](file:///d:/eddie-agents/coding-agent-workspace/.agents/manifest.json).
+
 Whenever starting a session in this repository, follow this deterministic boot sequence:
-1. **Read Root Guidelines**: Read [AGENTS.md](file:///d:/eddie-agents/coding-agent-workspace/AGENTS.md).
+1. **Read Root Guidelines & Manifest**: Read [AGENTS.md](file:///d:/eddie-agents/coding-agent-workspace/AGENTS.md) and [.agents/manifest.json](file:///d:/eddie-agents/coding-agent-workspace/.agents/manifest.json).
 2. **Read Directory Map**: Read [.agents/README.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/README.md).
 3. **Read Workspace State**: Read [.agents/state.json](file:///d:/eddie-agents/coding-agent-workspace/.agents/state.json) to retrieve the active project pointer.
-4. **Load Active Persona**: Read [.agents/personas/fullstack-builder.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/personas/fullstack-builder.md).
-5. **Load Mandatory Workspace Rules**: Load and register the required laws:
+4. **Load Active Persona (CORE)**: Read [.agents/personas/fullstack-builder.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/personas/fullstack-builder.md).
+5. **Load Mandatory Workspace Rules (CORE)**: Load and register the required laws:
    * [.agents/rules/repo-boundaries.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/rules/repo-boundaries.md)
+   * [.agents/rules/planning.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/rules/planning.md)
    * [.agents/rules/coding.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/rules/coding.md)
    * [.agents/rules/verification.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/rules/verification.md)
-6. **Load Core Engineering Skills**: Read the foundational skills:
+6. **Load Core Engineering Skills (CORE)**: Read only these core skills from `.agents/skills/`:
    * [.agents/skills/engineering/engineering-judgment.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/engineering-judgment.md)
    * [.agents/skills/engineering/debugging.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/debugging.md)
-   * [.agents/skills/engineering/code-review.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/engineering/code-review.md)
-7. **Determine Active Project Status**:
-   * **If active_project is NOT null**: Load ONLY the matching project configuration (e.g., `.agents/projects/<project-slug>.json`) and its latest handoff (`.agents/handoffs/<project-slug>/latest.md`). Do not load/inspect any other projects.
-   * **If active_project IS null**: List registered projects with a short summary, and request project activation. Do not read handoffs/sessions or load project details deeply.
+   * [.agents/skills/engineering/code-review.md](file:///d:/eddie-agents/coding-agent-workspace/.agents/skills/code-review.md)
+7. **Determine Active Project Status & Load Scoped Handoff**:
+    * **If active_project is NOT null**: Load ONLY the matching project configuration (e.g., `.agents/projects/<project-slug>/config.json`) and its latest handoff (`.agents/projects/<project-slug>/latest.md`). Do not load/inspect any other projects' configurations or handoffs.
+    * **If active_project IS null**: List registered projects with a short summary, and request project activation. Do not read handoffs/sessions or load project details deeply.
 
-**Plugin Exception**: External plugins (located under `.agents/plugins/`) are strictly untrusted external capabilities. They must **never** be loaded during normal startup or boot sequences. They are only loaded/analyzed explicitly during `analyze plugin` or `import plugin` commands, or when a tool specifically requires them. The core agent boot protocol must only load trusted workspace rules, persona, and core skills.
+### On-Demand Context Loading Policy (DORMANT directories)
+All other directories and skills are DORMANT and **must NOT** be loaded at startup. Load them strictly on-demand as required by your active task:
+- **Product & Business Analysis (BA) Tasks**: Load and read `.agents/skills/product/ba-process/SKILL.md` when analyzing requirements, drafting specifications, defining user flows, or structuring project parameters.
+- **Frontend Tasks**: Load and read `.agents/skills/frontend/` if writing React, Next.js, or CSS code.
+- **Backend/API Tasks**: Load and read `.agents/skills/backend/` or `.agents/skills/infra/` if writing API routes, database models, or DevOps configs.
+- **Visual Redesigns**: Load design skills (e.g., `.agents/skills/design/`) ONLY if visual styling, logo concepting, or branding is requested.
+- **Workspace Admin Workflows**: Load specific playbooks under `.agents/commands/` only when executing those commands (e.g., registering or onboarding a project).
 
-Always output a startup verification checklist confirming these rules and skills have been loaded before executing any commands or editing target code.
+**Plugin Exception**: External plugins (located under `.agents/plugins/`) are strictly untrusted external capabilities. They are **DISABLED** by default and must **never** be loaded during normal startup or boot sequences. They are only loaded/analyzed explicitly during `analyze plugin` or `import plugin` commands.
+
+Always output a startup verification checklist confirming that rules, core skills, and manifest loading policies have been loaded before executing any commands or editing target code.
 
 ---
 
@@ -52,7 +63,7 @@ Always output a startup verification checklist confirming these rules and skills
 ## Target Repo Protocol
 
 Before writing or editing code in any target repository, you must:
-1. Load the corresponding project config from `.agents/projects/<project-name>.json`.
+1. Load the corresponding project config from `.agents/projects/<project-name>/config.json`.
 2. Move your shell and mental context into the target repository's directory.
 3. Read the target repo's local `AGENTS.md`, `README.md`, and any project state docs (e.g., `docs/PROJECT_STATE.md`).
 4. Inspect the target's dependencies, env templates (`.env.example`), build system, and tests.
@@ -64,6 +75,7 @@ Before writing or editing code in any target repository, you must:
 
 As a senior fullstack operator, you are equipped with dedicated capability modules under `.agents/skills/` and `.agents/personas/`:
 - **Persona**: `.agents/personas/fullstack-builder.md` (defining identity and developer workflows).
+- **Product/BA**: `.agents/skills/product/ba-process/SKILL.md` (business analysis, goal definitions, inputs/outputs, user actors, steps, dependencies, acceptance criteria, and edge cases).
 - **Frontend**: `.agents/skills/frontend/frontend.md` (conventions for React, Next.js, and CSS styling).
 - **Backend**: `.agents/skills/backend/backend.md` (API design, validation schemas, and database practices).
 - **DevOps/Infra**: `.agents/skills/infra/devops.md` (Docker containerization, ports, and setups).
@@ -81,18 +93,20 @@ When a command or request is received, activate the appropriate persona, skills,
 - Report precisely what checks were run and what outputs they returned.
 
 ### Handoffs
-- At the end of a session where work remains or context needs preservation, write a markdown file under `.agents/handoffs/<project-slug>/YYYY-MM-DD-session.md`.
+- At the end of a session where work remains or context needs preservation, write a markdown file under `.agents/projects/<project-slug>/handoffs/YYYY-MM-DD-session.md`.
 - Document what is working, what is blocked, next steps, and command lines to resume the work.
-- Always update `.agents/handoffs/<project-slug>/latest.md` with the latest status and task list.
+- Always update `.agents/projects/<project-slug>/latest.md` with the latest status and task list.
+- **Strict Scope**: Project-scoped handoffs and task lists must only track changes and progress made specifically to that target project. Do not document workspace-level rule modifications, global boot adjustments, or meta-workspace optimization actions in project-scoped handoffs.
 ---
 
 ## Session Contract
 
 1. **Every meaningful project action must be logged**: Any registration, activation, onboarding, or significant analysis/updates on a project must be recorded.
-2. **Project-scoped session files live under `.agents/sessions/<project-slug>/`**: Each session must create or update a file following the format `YYYY-MM-DD-HHMM.md`.
-3. **Creating the folder alone is not sufficient**: Simply initializing the directory structure does not fulfill the session log requirement.
-4. **Registration/onboarding must create the first session file**: The very first time a project is onboarded or registered, a session log file must be generated immediately.
-5. **Handoffs vs. Sessions**: Handoffs (`.agents/handoffs/`) summarize current state and checklists for future sessions; sessions (`.agents/sessions/`) record detailed work history, terminal runs, diagnostics, and step-by-step actions taken.
+2. **Project-scoped session files live under `.agents/projects/<project-slug>/sessions/`**: Each session must create or update a file following the format `YYYY-MM-DD-HHMM.md`.
+3. **Strict Scope**: Project-scoped session logs must only record work history, terminal runs, and actions taken specifically on that project. Global workspace rule modifications, boot sequence adjustments, and meta-level workspace optimizations must be logged exclusively in the global `.agents/projects/session-log.md`.
+4. **Creating the folder alone is not sufficient**: Simply initializing the directory structure does not fulfill the session log requirement.
+5. **Registration/onboarding must create the first session file**: The very first time a project is onboarded or registered, a session log file must be generated immediately.
+6. **Handoffs vs. Sessions**: Handoffs (e.g. `latest.md` and `handoffs/` subfolder) summarize current state and checklists for future sessions; sessions (`sessions/` subfolder) record detailed work history, terminal runs, diagnostics, and step-by-step actions taken.
 
 ---
 
@@ -103,8 +117,8 @@ When a project path, repository URL, or codebase is provided (via requests like 
 1. Attempt to locate an existing project pointer under `.agents/projects/`.
 2. If none exists, run the **Register Project** workflow command (`.agents/commands/register-project.md`) to inspect the target repository and populate its metadata.
 3. Never perform extended development work on an unregistered project.
-4. All project metadata must be stored in `.agents/projects/`.
-5. Scoped handoffs and session logs must reside in `.agents/handoffs/<project-slug>/` and `.agents/sessions/<project-slug>/` respectively.
+4. All project metadata must be stored in `.agents/projects/<project-slug>/config.json`.
+5. Scoped handoffs and session logs must reside in `.agents/projects/<project-slug>/` (as `latest.md` / `handoffs/`) and `.agents/projects/<project-slug>/sessions/` respectively.
 
 ---
 
@@ -120,51 +134,27 @@ When a project path, repository URL, or codebase is provided (via requests like 
 ```text
 .agents/
 ├── README.md               - High-level directory map explaining Taxonomy
-├── state.json              - Active workspace project and focus
-├── rules/                  - Global rules (coding, safety, boundaries, verification)
-├── personas/               - Personas (Who I am)
-│   ├── README.md           - Description of Personas
-│   └── fullstack-builder.md- Core operator persona
-├── skills/                 - Skills Capability Hierarchy (What I know)
-│   ├── README.md           - Description of Skills
-│   ├── design/             - Design-taste packages (brandkit, minimalist, etc.)
-│   ├── frontend/           - Frontend framework & UI standards
-│   ├── backend/            - API & backend architecture
-│   ├── infra/              - DevOps & deployment configurations
-│   ├── engineering/        - Debugging, testing, and review guidelines
-│   ├── data/               - Data scraping, modeling, and scoring (placeholder)
-│   ├── product/            - Specs & product requirements (placeholder)
-│   └── meta/               - Self-improvement, repository discovery, imports
-├── commands/               - Workspace Commands (How I work)
-│   ├── start-fullstack-agent.md
-│   ├── onboard-target-repo.md
-│   ├── implement-feature.md
-│   ├── fix-bug.md
-│   ├── review-code.md
-│   ├── prepare-deploy.md
-│   └── handoff.md
-├── recipes/                - Recipes (How skills and commands combine)
-│   └── README.md           - Recipes index and definition
-├── projects/               - Projects (Where real product repos live)
-│   ├── _template.json      - Reusable project config template
-│   └── *.json              - Target project configurations
-├── handoffs/               - Handoff notes (Cross-session handoff logs)
-│   ├── README.md           - Handoff instructions
-│   └── *.md                - Chronological handoff logs
-├── sessions/               - Session records (Logs and decisions)
-│   ├── README.md           - Session info
-│   └── session-log.md      - Cumulative action log
-├── templates/              - Reusable document and file templates
-├── plugins/                - External capability packs (untrusted until imported)
-│   └── <plugin-name>/
-│       ├── source/         - Original plugin contents
-│       └── notes.md        - Workspace observations and import decisions
-├── docs/                   - Long-form explanations and decisions
-│   ├── digital-product-engineering-os.md
-│   └── decisions.md        - Log of architectural decisions
-└── scratch/                - Temporary experiments or messy files
-    ├── README.md           - Scratch definition
-    └── test_*.js           - Local diagnostic tests
+├── manifest.json           - [CORE] Core-Dormant configuration control mapping
+├── state.json              - [CORE] Active workspace project and focus state
+├── rules/                  - [CORE] Global rules (repo boundaries, coding standards, verification)
+├── personas/               - [CORE] Personas (Who I am - active persona fullstack-builder.md loaded)
+├── projects/               - [CORE] Projects (Folder containing configs, handoffs, and session logs per project)
+├── skills/                 - [CORE + DORMANT] capability hierarchy
+│   ├── engineering/        - [CORE] always_load (engineering-judgment, debugging, code-review)
+│   ├── design/             - [DORMANT] load_on_demand (brandkit, visual design taste, styling)
+│   ├── frontend/           - [DORMANT] load_on_demand (React, Next.js, CSS)
+│   ├── backend/            - [DORMANT] load_on_demand (API standards, database setup)
+│   ├── infra/              - [DORMANT] load_on_demand (Docker, DevOps deployments)
+│   ├── data/               - [DORMANT] load_on_demand (scraping, data pipeline)
+│   ├── product/            - [DORMANT] load_on_demand (product specification, ba-process)
+│   └── research/           - [DORMANT] load_on_demand (importers, repository research, skill discovery)
+
+├── commands/               - [DORMANT] Workspace workflows (onboard-target-repo, register-project, etc.)
+├── docs/                   - [DORMANT] Long-form reference manuals and decisions.md logs
+├── templates/              - [DORMANT] Reusable document blueprints
+├── recipes/                - [DISABLED] Deprecated coordinate flows (consolidated into commands/)
+├── plugins/                - [DISABLED] Untrusted external capability packs (untrusted until imported)
+└── scratch/                - [DISABLED] Temporary local experiments and diagnostics
 ```
 
 ---

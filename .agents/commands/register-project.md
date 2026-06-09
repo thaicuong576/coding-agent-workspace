@@ -17,11 +17,11 @@ Used whenever a user points to a new repository, folder, local path, GitHub URL,
 2. Derive a URL-safe lowercase slug (e.g. `/my-cool-project` ➔ `my-cool-project`).
 
 ### Step 2: Check Existing Registration
-1. Verify if `projects/<project-slug>.json` already exists.
+1. Verify if `projects/<project-slug>/config.json` already exists.
 2. If it exists, verify if the path matches the registered value. If it matches, set it as the active project in `.agents/state.json` and skip to Step 5.
 
 ### Step 3: Initialize from Template
-1. If the project configuration is missing, copy `.agents/projects/_template.json` to `.agents/projects/<project-slug>.json`.
+1. If the project configuration is missing, copy `.agents/projects/_template.json` to `.agents/projects/<project-slug>/config.json` (creating the folder `.agents/projects/<project-slug>/` first).
 2. Populate the metadata fields:
    - `name`: Human-readable name.
    - `slug`: The derived project slug.
@@ -39,9 +39,9 @@ Shift context (or run read/search operations) to inspect the target repository's
 
 ### Step 5: Initialize Folder Structure & Session Log
 Create the dedicated project-scoped directories and initial status documents:
-1. **Handoff Folder**: `.agents/handoffs/<project-slug>/`
-2. **Session Folder**: `.agents/sessions/<project-slug>/`
-3. **`latest.md` Handoff**: If `.agents/handoffs/<project-slug>/latest.md` is missing, write an initial status document:
+1. **Handoffs Folder**: `.agents/projects/<project-slug>/handoffs/`
+2. **Sessions Folder**: `.agents/projects/<project-slug>/sessions/`
+3. **`latest.md` Handoff**: If `.agents/projects/<project-slug>/latest.md` is missing, write an initial status document:
    ```markdown
    # Latest Status: <project-name>
 
@@ -54,7 +54,7 @@ Create the dedicated project-scoped directories and initial status documents:
    ## Next Steps
    - Inspect code structure and run baseline compilation tests.
    ```
-4. **Initial Session File**: Always create the first session trace log file under `.agents/sessions/<project-slug>/YYYY-MM-DD-HHMM.md` (e.g. `.agents/sessions/bds/2026-06-05-0158.md`). Ensure it contains the following structure:
+4. **Initial Session File**: Always create the first session trace log file under `.agents/projects/<project-slug>/sessions/YYYY-MM-DD-HHMM.md` (e.g. `.agents/projects/bds/sessions/2026-06-05-0158.md`). Ensure it contains the following structure:
    ```markdown
    # Session: <project-slug> — YYYY-MM-DD HH:MM
 
@@ -62,17 +62,17 @@ Create the dedicated project-scoped directories and initial status documents:
    Why this session started (e.g., User pointed to target directory / Register Project workflow started).
 
    ## Actions Taken
-   * Created project pointer
+   * Created project pointer config.json
    * Updated state.json
-   * Created handoff folder
+   * Created handoffs and sessions folders
    * Created latest.md
    * Inspected repo stack
    * Detected commands
 
    ## Files Created / Modified
-   * `.agents/projects/<slug>.json`
-   * `.agents/handoffs/<slug>/latest.md`
-   * `.agents/sessions/<slug>/YYYY-MM-DD-HHMM.md`
+   * `.agents/projects/<slug>/config.json`
+   * `.agents/projects/<slug>/latest.md`
+   * `.agents/projects/<slug>/sessions/YYYY-MM-DD-HHMM.md`
    * `.agents/state.json`
 
    ## Current Status
