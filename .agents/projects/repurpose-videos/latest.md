@@ -1,8 +1,8 @@
 # Latest Status: repurpose-videos
 
-**Last Updated**: 2026-06-09 00:48 +07:00
+**Last Updated**: 2026-06-09 10:55 +07:00
 
-## Current Status: VPS-Ready Internal Microservice, Product Spec Formalized
+## Current Status: Local Docker Service Active, V3 Completed
 
 The `repurpose-videos` project is active at:
 
@@ -10,7 +10,7 @@ The `repurpose-videos` project is active at:
 D:\eddie-projects\personal-projects\repurpose-videos
 ```
 
-The repo has been reorganized into a cleaner internal-service layout and hardened for VPS deployment. The reusable processors now live under a `pipeline/` package, while `app.py`, `repurpose.py`, and `requirements.txt` remain at the root as service/CLI/dependency entrypoints.
+The service is currently running inside a Docker container on port `8000`.
 
 ## Current Layout
 
@@ -61,17 +61,17 @@ temp*/                    Runtime scratch folders, ignored
   - healthcheck
   - Python runtime env flags
   - app/cache/runtime directories owned by app user
+  - **Fixed dependencies**: Swapped deprecated `libgl1-mesa-glx` for `libgl1` to support Debian trixie bases.
 - Updated Docker Compose:
   - env-driven service port
   - persistent `data`, `uploads`, and `outputs` mounts
-- Updated `.env.example`, README, `docs/PROJECT_STATE.md`, and `docs/VPS_DEPLOY.md`.
 
 ## Current Git State in Target Repo
 
 Branch:
 
 ```text
-v2...origin/v2
+v3...origin/v3
 ```
 
 Modified tracked files:
@@ -133,18 +133,18 @@ jobs_x_key 200
 jobs_bearer 200
 ```
 
-Docker Compose validation:
+Docker Compose validation & Local Container Boot:
 
 ```powershell
-docker compose config --quiet
+docker compose up --build -d
 ```
 
-Result: passed with no output.
+Result: Passed. Successfully built and running `repurpose-service` container.
 
-Live uvicorn HTTP smoke on `127.0.0.1:8765`:
+Live container HTTP smoke on `127.0.0.1:8000`:
 
 ```text
-health=200; root=200; jobs_no_key=401; jobs_with_key=200
+health=200 (status: ok, service: Douyin Repurpose Service, auth_enabled: false)
 ```
 
 Stale old processor imports check:
@@ -160,7 +160,9 @@ A full end-to-end sample video run was successfully executed by the user on 'vid
 ## Remaining Open Items
 
 - [x] Run a fresh end-to-end sample through CLI and dashboard.
-- [ ] Review and commit the intended V2/deploy-readiness files.
+- [x] Launch and run the microservice inside a Docker container.
+- [ ] Connect and test from n8n workflows.
+- [ ] Review and commit the intended V3/deploy-readiness files.
 - [ ] Decide whether `tools/dev/` should stay in the production repository long-term.
 - [ ] Add GPU-specific deployment notes if deploying Whisper/EasyOCR/Demucs with NVIDIA acceleration.
 - [ ] Address TTS duration mismatch for long subtitle cues.
