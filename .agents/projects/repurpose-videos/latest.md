@@ -1,8 +1,9 @@
 # Latest Status: repurpose-videos
 
-**Last Updated**: 2026-06-09 16:00 +07:00
+**Last Updated**: 2026-06-19 14:20 +07:00
 
-## Current Status: Local Docker Service Active, V3 & n8n Poller Looping Configured
+## Current Status: Standardized modular testing and pipeline caching. Integrated step `mask` (caching/rebuilding the original subtitles removal stage via `masked.mp4`) and created mock baseline audio files (`bgm.wav`, `tts_voice.wav`) to allow offline verification of the entire pipeline, including sidechain audio ducking. Run time for a fully cached run is under 3 seconds.
+
 
 The `repurpose-videos` project is active at:
 
@@ -10,7 +11,7 @@ The `repurpose-videos` project is active at:
 D:\eddie-projects\personal-projects\repurpose-videos
 ```
 
-The service is currently running inside a Docker container on port `8000`.
+The service is currently running inside a Docker container on port `8000`, configured with wildcard `ALLOWED_HOSTS` and `ALLOWED_ORIGINS` to support public connectivity.
 
 ## Current Layout
 
@@ -71,41 +72,10 @@ temp*/                    Runtime scratch folders, ignored
 Branch:
 
 ```text
-v3...origin/v3
+v5...origin/v5 (up to date, clean working tree)
 ```
 
-Modified tracked files:
-
-```text
-.env.example
-.gitignore
-Dockerfile
-README.md
-app.py
-docker-compose.yml
-repurpose.py
-requirements.txt
-```
-
-Untracked intended files:
-
-```text
-.dockerignore
-docs/PROJECT_STATE.md
-docs/VPS_DEPLOY.md
-docs/refactoring_plan.md
-docs/siren_talks_documentation.md
-pipeline/
-templates/
-tools/
-```
-
-Ignored runtime/local files:
-
-```text
-.env
-.venv/
-```
+No modified tracked files or untracked files. All code changes have been pushed to origin.
 
 ## Verification Run
 
@@ -162,9 +132,11 @@ A full end-to-end sample video run was successfully executed by the user on 'vid
 - [x] Run a fresh end-to-end sample through CLI and dashboard.
 - [x] Launch and run the microservice inside a Docker container.
 - [x] Connect and test from n8n workflows.
+- [x] Implement pipeline caching mechanism (`--cache-dir`) for modular QA.
 - [ ] Review and commit the intended V3/deploy-readiness files.
 - [ ] Decide whether `tools/dev/` should stay in the production repository long-term.
 - [ ] Add GPU-specific deployment notes if deploying Whisper/EasyOCR/Demucs with NVIDIA acceleration.
 - [ ] Address TTS duration mismatch for long subtitle cues.
 - [ ] Add static region removal for top/corner watermarks.
 - [ ] Improve temporal consistency for inpainting on motion-heavy footage.
+
