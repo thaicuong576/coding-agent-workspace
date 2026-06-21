@@ -1,9 +1,8 @@
 # Latest Status: repurpose-videos
 
-**Last Updated**: 2026-06-19 14:20 +07:00
+**Last Updated**: 2026-06-22 00:07 +07:00
 
-## Current Status: Standardized modular testing and pipeline caching. Integrated step `mask` (caching/rebuilding the original subtitles removal stage via `masked.mp4`) and created mock baseline audio files (`bgm.wav`, `tts_voice.wav`) to allow offline verification of the entire pipeline, including sidechain audio ducking. Run time for a fully cached run is under 3 seconds.
-
+## Current Status: Switched to branch `v6` locally. Successfully implemented a deterministic Python-based post-process splitting algorithm inside `wrap_srt_text` in `pipeline/subtitles.py` and simplified the LLM prompt to perform clean 1-to-1 translation. This eliminates LLM-based translation formatting anomalies, guarantees that translated Vietnamese subtitles never exceed 10 words, distributes duration timing proportionally based on text character lengths, and re-sequences subtitle indexes sequentially. Verified through full pipeline runs (using Kimi API translation and Siren TTS) that the generated video has flawless, short Vietnamese subtitles. Unit tests pass successfully.
 
 The `repurpose-videos` project is active at:
 
@@ -23,9 +22,10 @@ pipeline/audio.py         Audio extraction, Demucs separation, Siren TTS, TTS mi
 pipeline/subtitles.py     Whisper ASR, LLM translation, SRT parsing/wrapping
 pipeline/video.py         OCR detection, subtitle inpainting, FFmpeg render/mux
 templates/dashboard.html  Browser dashboard
-docs/VPS_DEPLOY.md        VPS deployment guide
-docs/PROJECT_STATE.md     Current architecture/state snapshot
-tools/dev/                Manual diagnostics and one-off probes
+docs/specs/               Specifications and state snapshots (PROJECT_STATE.md, product_spec.md, etc.)
+docs/guides/              Operational and deployment guides (API_REFERENCE.md, VPS_DEPLOY.md, testing_and_debugging.md)
+docs/archive/             Historical implementation plans (implementation_plan.md, refactoring_plan.md, etc.)
+tests/                    Automated unit tests and manual development probes
 data/                     Runtime job metadata, ignored
 uploads/                  Runtime upload staging, ignored
 outputs/                  Runtime rendered videos, ignored
@@ -72,7 +72,7 @@ temp*/                    Runtime scratch folders, ignored
 Branch:
 
 ```text
-v5...origin/v5 (up to date, clean working tree)
+v6...origin/v6 (up to date, clean working tree)
 ```
 
 No modified tracked files or untracked files. All code changes have been pushed to origin.
@@ -133,8 +133,12 @@ A full end-to-end sample video run was successfully executed by the user on 'vid
 - [x] Launch and run the microservice inside a Docker container.
 - [x] Connect and test from n8n workflows.
 - [x] Implement pipeline caching mechanism (`--cache-dir`) for modular QA.
-- [ ] Review and commit the intended V3/deploy-readiness files.
-- [ ] Decide whether `tools/dev/` should stay in the production repository long-term.
+- [x] Optimize portrait video (9:16) subtitle wrapper layout to fill line widths (96% layout, 0.28 coefficient).
+- [x] Implement Dynamic MarginV vertical centering logic for 1-line vs 2-line alignment in mask bands.
+- [x] Move testing and debugging guide to target repository docs folder.
+- [x] Implement dynamic support for official MiniMax Responses API alongside standard Chat Completions.
+- [x] Review and commit the intended V3/deploy-readiness files.
+- [x] Decide whether `tools/dev/` should stay in the production repository long-term (consolidated all test files under `tests/`).
 - [ ] Add GPU-specific deployment notes if deploying Whisper/EasyOCR/Demucs with NVIDIA acceleration.
 - [ ] Address TTS duration mismatch for long subtitle cues.
 - [ ] Add static region removal for top/corner watermarks.

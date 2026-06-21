@@ -485,5 +485,398 @@
 
 **Status**: Caching for the `mask` step and dummy audio baseline setup completed and verified. Ready for production staging.
 
+---
 
+## 2026-06-19 15:15
 
+**Trigger**: Optimize subtitle masking precision, resolve top/bottom zone detection conflicts in landscape videos, and accelerate masking speed.
+
+**Actions Taken**:
+* Analyzed the landscape reference cache issue: The cached `coords.txt` contained `71, 134` (top area), which caused the mask to cover the logo region instead of the bottom speech subtitles.
+* Re-ran the OCR subtitle zone detection, successfully auto-detecting the true subtitle vertical band at `Y = 908 to 1023` in the bottom 30% of the landscape video.
+* Optimized the `blurbox` (and `frost`) masking algorithm in `pipeline/video.py` using the **Downscale-Blur-Upscale** technique (downsample by 8x, apply small Gaussian blurs, and upscale back to original dimensions).
+* Bypassed grayscale conversion, thresholding, outline subtraction, and contour-finding operations when using the `blurbox` or `frost` masking type, saving significant CPU cycles.
+* This optimization increased masking speed by **3.5x** (from ~10 FPS to ~35 FPS), reducing the render phase from 4 minutes to under 77 seconds.
+* Added `output_path.parent.mkdir(parents=True, exist_ok=True)` in `apply_subtitles_and_mask` to prevent FFmpeg crashes if the output directory does not exist.
+* Cleansed the target repository by deleting temporary scratch files and folders under `scratch/` and deleting `sub.ass`.
+
+**Status**: Verified correct subtitle zone masking and 3.5x faster rendering. Reference cache updated with correct coords and masked video.
+
+---
+
+## 2026-06-19 15:35
+
+**Trigger**: Verify auto-detected coordinate consistency on landscape video assets and align reference cache coordinates.
+
+**Actions Taken**:
+* Retested coordinate auto-detection (`ocr` step rebuild) using `repurpose.py` with `--rebuild-step ocr`.
+* Confirmed that the detection logic stably returns correct coordinates `Y = 908 to 1023` targeting the bottom speech subtitle band (resolving the conflict with the top logo region).
+* Synced the reference cache in `temp/reference_cache_landscape/coords.txt` with the correct `908,1023` coords.
+* Executed a fully cached run using the updated reference cache and confirmed it successfully loaded the correct `Y = 908 to 1023` coords in under 3 seconds.
+* Verified that all unit tests in `tests/test_subtitle_zone.py` continue to pass successfully.
+
+**Status**: Retesting and coordinate alignment verified. Subtitle zone caching behaves consistently.
+
+---
+
+## 2026-06-19 17:21
+
+**Trigger**: Update subtitle style formatting in the rendering pipeline (removing background box and using outline + glow style).
+
+**Actions Taken**:
+* Refactored `_convert_srt_to_ass` in `pipeline/video.py` to change the subtitle layout from a translucent gray box to a "Nunito Black Glow" design (white text body, black outline of thickness 6, and soft white glow layer of thickness 14 and 35% opacity).
+* Rendered a preview mockup of the subtitle style without the background box, saved as `subtitle_no_box_preview.png` and documented in `docs/subtitle_preview.md`.
+* Compiled the full video output with the new style to `temp/outputs/test_video_landscape_glow.mp4` and verified that the render process completed successfully.
+
+**Status**: Glow subtitle style implemented and successfully burned onto the test video output.
+
+---
+
+## 2026-06-19 17:26
+
+**Trigger**: Apply the "Bungee" font to the subtitle rendering pipeline.
+
+**Actions Taken**:
+* Downloaded the official Google Font `Bungee-Regular.ttf` using `curl.exe` and saved it to the `fonts/` directory.
+* Modified the ASS subtitle styling in `_convert_srt_to_ass` in `pipeline/video.py` to change the font from `Nunito Black` to `Bungee` for both the text and glow layers.
+* Rendered the output video with Bungee font and the glow subtitle style to `temp/outputs/test_video_landscape_bungee.mp4`.
+
+**Status**: Bungee font successfully integrated and tested in the video rendering pipeline.
+
+---
+
+## 2026-06-19 17:41
+
+**Trigger**: Dynamically center subtitles within the detected masking zone and ensure orientation-aware font sizing.
+
+**Actions Taken**:
+* Modified `_convert_srt_to_ass` signature and call in `pipeline/video.py` to accept `y_min` and `y_max`.
+* Changed font size calculation to scale based on `min(width, height)` instead of `height`, ensuring consistent, orientation-aware typography scaling for both landscape and portrait resolutions.
+* Implemented dynamic `margin_v` calculation to mathematically center the text block vertically within the `[y_min, y_max]` mask zone.
+* Rendered the output video with Bungee font and the dynamic centering logic to `temp/outputs/test_video_landscape_bungee_centered.mp4`.
+
+**Status**: Dynamic centering and orientation-aware font scaling successfully implemented and tested.
+
+---
+
+## 2026-06-19 17:44
+
+**Trigger**: Execute full pipeline for portrait video `temp/test_video_portrait.mp4`.
+
+**Actions Taken**:
+* Ran the complete repurposing pipeline (audio extraction, Whisper translation via local 'tiny' model, OCR coordinate scanning, Kimi translation) on the portrait video asset.
+* Verified that Bungee font auto-scaled correctly to size `60` based on the portrait width `720` (from `min(720, 960)`).
+* Verified that the dynamic vertical margins centered the subtitles perfectly within the default safe-zone band (`Y = 768 to 921`).
+* Copied the generated `coords.txt` and `audio.vi.srt` translation cache into the `temp/reference_cache_portrait` directory to initialize the baseline cache.
+* Saved the final rendered output to `temp/outputs/test_video_portrait_output.mp4`.
+
+**Status**: Portrait video pipeline completed successfully; reference cache initialized.
+
+---
+
+## 2026-06-19 17:47
+
+**Trigger**: Increase the subtitle font size coefficient for a more prominent visual style.
+
+**Actions Taken**:
+* Updated the font size scaling factor in `_convert_srt_to_ass` in `pipeline/video.py` from `0.083` to `0.09`.
+* For 1080p landscape videos, this increases the Bungee font size from `90` to `97` (and dynamically adjusts the vertical centering calculations to align perfectly within the `[y_min, y_max]` mask zone).
+* Rendered the updated landscape video to `temp/outputs/test_video_landscape_bungee_centered_large.mp4`.
+
+**Status**: Font scale factor successfully increased to 0.09 and verified.
+
+---
+
+## 2026-06-19 17:52
+
+**Trigger**: Optimize subtitle mask blur strength to maximize obscurity of original subtitles while maintaining rendering performance.
+
+**Actions Taken**:
+* Updated the downscale factor in `blurbox` masking from `8` to `16`, shrinking thin stroke shapes to sub-pixel levels.
+* Increased the Gaussian blur kernel size from `(11, 11)` to `(15, 15)`.
+* Deleted and rebuilt the cached `masked.mp4` using the new parameters, which runs 4x faster on the downscaled frame due to the reduced pixel count, saving CPU cycles.
+* Rendered the landscape output with heavy blur to `temp/outputs/test_video_landscape_bungee_heavy_blur.mp4`.
+* Copied the newly rendered mask back to `temp/reference_cache_landscape/masked.mp4`.
+
+**Status**: Heavy blur optimization successfully completed and verified.
+
+---
+
+## 2026-06-19 17:57
+
+**Trigger**: Add a neutral grey overlay to the subtitle blur mask to diminish distracting bright colors and subtitle fragments.
+
+**Actions Taken**:
+* Blended a solid neutral grey overlay (`BGR: 100, 100, 100`) at 30% ratio with the blurred background area using `cv2.addWeighted`.
+* This yields a premium "frosted grey glass" aesthetic, neutralizing colors from the original video's subtitles and enhancing white text legibility.
+* Rebuilt the cache and rendered both landscape (`test_video_landscape_bungee_grey_blur.mp4`) and portrait (`test_video_portrait_bungee_grey_blur.mp4`) video assets.
+* Saved the updated masks as new baselines under `temp/reference_cache_landscape/` and `temp/reference_cache_portrait/`.
+
+**Status**: Grey-tinted frosted glass blur successfully implemented, rendered, and verified.
+
+---
+
+## 2026-06-20 12:20
+
+**Trigger**: Optimize subtitle wrapping and vertical centering alignment for portrait (9:16) videos.
+
+**Actions Taken**:
+*   **Implemented Greedy Wrapping**: Replaced default `textwrap` balancing with `greedy_wrap` in `pipeline/video.py`. Subtitles now fill the line up to character limit (~37 chars per line at size 65 with 0.28 Bungee width coefficient) before wrapping, generating professional layouts.
+*   **Expanded Container Width**: Pushed usable width container to 96% of the frame (leaving 2% margins left and right) to give subtitles a spacious look.
+*   **Implemented Dynamic MarginV**: Created dynamic vertical margin calculation per dialogue event. Estimates geometric height of text block dynamically based on actual line count and font size to offset the baseline, centering both 1-line and 2-line subtitle boxes perfectly in the detected masking zone `[y_min, y_max]`.
+*   **Created Testing Guide in Target Repo**: Wrote `docs/testing_and_debugging.md` directly inside the target repository (`repurpose-videos`) outlining pipelines, commands, cache formats, and debugging methods for future developers/agents.
+*   **Visual Verification**: Re-rendered test video and extracted frames at second 33 (double-line) and second 40.5 (single-line), confirming both are perfectly centered inside the mask band. Saved verification report to `dynamic_margin_v_verification.md` in brain app data.
+
+**Status**: Portrait subtitle layout and dynamic vertical centering successfully optimized and verified. Documentation saved in target repository.
+
+---
+
+## 2026-06-20 13:30
+
+**Trigger**: Switch to official MiniMax responses API (`https://api.minimax.io/v1/responses`) and verify output compatibility.
+
+**Actions Taken**:
+*   **Investigated API Specifications**: Researched official MiniMax `/v1/responses` endpoint details. Confirmed compatibility with OpenAI's new Responses API, which replaces the stateless `choices` array with a stateful `output` structure containing block-level messages.
+*   **Implemented Dynamic URL & Parser Routing**: Modified `pipeline/subtitles.py` to inspect the configured `LLM_BASE_URL`. If the URL points to `/responses`, it builds the appropriate payload using `instructions` and `input` parameters, and parses responses using the `output` schema. Otherwise, it falls back to the standard `messages` and `choices` schema.
+*   **Wrote Mock Verification Suite**: Created `tools/dev/test_subtitles_translation.py` directly inside the target repository. Mocked HTTP calls for both standard completions and Responses API formats.
+*   **Verified Locally**: Ran the test suite successfully showing that `translate_srt` works perfectly for both formats. Tested compilation behavior.
+*   **Live End-to-End Verification**: Created `tools/dev/test_real_translation.py` to test the user's newly configured live credentials. Executed it successfully, confirming that the pipeline translates and wraps English subtitles to Vietnamese (e.g. spelling out "15" to "mười lăm" correctly for downstream TTS integration) without errors.
+
+**Status**: MiniMax Responses API dynamically integrated and successfully verified against live production credentials.
+
+---
+
+## 2026-06-20 14:26
+
+**Trigger**: Clean up repository, review, and organize the `docs/` folder layout.
+
+**Actions Taken**:
+*   **Audited Documentation**: Reviewed all Markdown files in `docs/` and `docs/specs/` to identify outdated instructions, checklist items, and specification scopes.
+*   **Updated Document Contents**:
+    *   Updated `docs/specs/PROJECT_STATE.md` with the current date, successful end-to-end portrait/landscape verification snapshots, and resolved known gaps.
+    *   Completed the final verification step check in `docs/archive/refactoring_plan.md`.
+    *   Prepended notes confirming completion status in `docs/archive/nunito_glow_implementation_plan.md`, `docs/archive/pipeline_cache_implementation_plan.md`, and `docs/archive/implementation_plan.md`.
+    *   Updated environment reference in `docs/guides/API_REFERENCE.md` for `LLM_BASE_URL` to document dual OpenAI Completions & MiniMax Responses API support.
+    *   Marked V2 and V3 phases as completed in `docs/specs/product_spec.md`.
+*   **Reorganized Documentation Directory Structure**: Moved files into logical subdirectories (`docs/specs/` for specifications, `docs/guides/` for operational guides, and `docs/archive/` for historical plans).
+*   **Updated References**: Updated internal links in `README.md` to point to the new layout paths.
+*   **Updated Workspace Status**: Checked off the V3 deployment review item and updated the layout map in `.agents/projects/repurpose-videos/latest.md`.
+
+**Status**: Repository documentation audited, updated, and organized into a clean folder structure.
+
+---
+
+## 2026-06-20 14:27
+
+**Trigger**: Consolidate scattered test files under `tests/` folder.
+
+**Actions Taken**:
+*   **Created Subdirectory Structure**: Set up `tests/unit/` for automated mock/unit tests and `tests/manual_probes/` for manual/integration probes.
+*   **Relocated Files**:
+    *   Moved `tests/test_subtitle_zone.py` and `tools/dev/test_subtitles_translation.py` into `tests/unit/`.
+    *   Moved all other diagnostic probes from `tools/dev/` to `tests/manual_probes/`.
+    *   Completely deleted the redundant `tools/` folder.
+*   **Updated References**:
+    *   Updated the internal test input/output paths in `tests/manual_probes/test_real_translation.py`.
+    *   Updated the README files in `tests/unit/` and `tests/manual_probes/` to clarify their distinct roles.
+    *   Updated `.dockerignore` to exclude `tests/manual_probes/` from production container builds.
+    *   Updated `README.md`, `docs/specs/PROJECT_STATE.md`, and `docs/archive/refactoring_plan.md` to reference the new consolidated structure.
+    *   Updated `latest.md` in the agent config folder to document the layout change and check off the `tools/dev/` directory cleanup decision.
+
+**Status**: Test and probe files successfully consolidated under the organized `tests/` directory structure.
+
+---
+
+## 2026-06-20 14:28
+
+**Trigger**: Clean up and optimize the `temp/` folder contents.
+
+**Actions Taken**:
+*   **Moved Diagnostic Scripts**: Relocated `temp/test_stable_ts.py` to `tests/manual_probes/test_stable_ts.py` to keep testing scripts consolidated.
+*   **Deleted Obsolete Files**: Removed the temporary `temp/test_sub.ass` file.
+*   **Updated Documentation**: Documented `test_stable_ts.py` in `tests/manual_probes/README.md`.
+*   **Kept Media Fixtures**: Left the git-ignored large test video files (`test_video_landscape.mp4` and `test_video_portrait.mp4`), cache outputs, and run directories under `temp/` to prevent repository bloating.
+
+**Status**: Temp folder cleaned and dedicated strictly to git-ignored binary media assets and runtime caches.
+
+---
+
+## 2026-06-20 14:31
+
+**Trigger**: Apply DevOps & Environment Config skill to align target repo settings for VPS packaging.
+
+**Actions Taken**:
+*   **Loaded DevOps Context**: Opened and registered the `.agents/skills/infra/devops.md` skill parameters on-demand.
+*   **Cleaned Docker Compose Bind Mounts**: Commented out development-only file/directory bind mounts (`app.py`, `repurpose.py`, `pipeline/`, `fonts/`, `tests/`) in `docker-compose.yml` to prevent host file overrides on VPS and avoid potential user/permission issues for the container's non-root `appuser`.
+*   **Kept Persistent Media Mounts**: Maintained `./data`, `./uploads`, and `./outputs` bind mounts to ensure persistent job registry data and media clips remain accessible on the VPS host machine.
+
+**Status**: Docker Compose settings successfully optimized for production-ready, self-contained VPS container packaging.
+
+---
+
+## 2026-06-20 19:40
+
+**Trigger**: Push target repository changes to the latest branch `v6` per user request.
+
+**Actions Taken**:
+* Checked local working directory state (on branch `v5`) and confirmed there were uncommitted renames/modifications corresponding to documentation audits and test file consolidations.
+* Fixed path resolution issue in `tests/unit/test_subtitle_zone.py` by correcting the directory depth in `sys.path.insert(0, ...)` after its relocation to `tests/unit/`.
+* Ran Python compilation checks (`py_compile`) and verified that the entire test suite (`tests/unit/`) passes successfully without errors.
+* Checked out new local branch `v6`.
+* Staged all modified, renamed, and new files (including `fonts/Bungee-Regular.ttf` and `fonts/Nunito-Black.ttf`).
+* Committed the staged files and successfully pushed branch `v6` to GitHub origin.
+
+**Status**: Branch `v6` is fully up-to-date and pushed to remote origin. Working tree is clean.
+
+---
+
+## 2026-06-21 16:41
+
+**Trigger**: Run a fresh, end-to-end full pipeline test on a new raw Douyin video URL using Siren TTS and without caching.
+
+**Actions Taken**:
+*   **Downloaded Test Asset**: Downloaded the raw input video from BCDN (`https://affiliate-inputs.b-cdn.net/repurpose/raw/AI_HOT_NEWS_Source_3/7600740249832099115_202606160830447.mp4`) to `temp/test_input_full.mp4` (~23.9 MB).
+*   **Executed Pipeline Without Cache**: Ran `repurpose.py` with option `-m tiny` and explicitly disabled intermediate file caching.
+*   **Verified Pipeline Execution**:
+    *   *Speech Extraction & Transcription*: Extracted mono audio and transcribed Chinese speech using local Whisper `tiny` model successfully, yielding 43 cues in `audio.src.srt`.
+    *   *OCR Subtitle Zone Detection*: Scanned frame samples and correctly identified the primary subtitle zone coordinate band at `Y = 1234 to 1327`.
+    *   *LLM Subtitles Translation*: Translated Chinese transcript to Vietnamese using MiniMax Responses API (`https://api.minimax.io/v1/responses`) successfully, saving to `audio.vi.srt`.
+    *   *Vocal Separation*: Isolated vocals using pre-trained `htdemucs` model to generate the background music track `no_vocals.wav` (~32.8 MB).
+    *   *Siren TTS Synthesis*: Submitted the translated SRT file to Siren API (`https://siren.nopslabs.com`) for timeline-synced Vietnamese speech synthesis, yielding the voiceover file `tts_voice.wav` (~8.9 MB).
+    *   *Masking & Subtitles Burning*: Applied the dynamic local `blurbox` masking (semi-transparent frosted glass tint overlay) on the detected coordinates, burned the styled ASS subtitles ( Nunito/Bungee text wrapping), sidechain-compressed BGM with the synthesized voiceover, and generated the final output video.
+*   **Saved Output**: Placed the final repurposed video at `temp/test_output_full.mp4` (~51.0 MB). All temporary scratch run folders were automatically cleaned up.
+
+**Status**: Full end-to-end pipeline run (with Siren TTS and MiniMax Responses translation, no caching) completed successfully and verified. Output saved to `temp/test_output_full.mp4`.
+
+---
+
+## 2026-06-21 21:00
+
+**Trigger**: Re-run the full pipeline and preserve all intermediate assets in a brand new, isolated folder without modifying or overwriting existing cache directories.
+
+**Actions Taken**:
+*   **Created Isolated Cache Folder**: Configured pipeline to run with `--cache-dir temp/run_cache_e2e_full_new`, ensuring it targets a new, separate workspace.
+*   **Executed Cold Start Run**: Executed `repurpose.py` with Whisper `tiny`, ASR, OCR detection, LLM Translation (MiniMax Responses), Demucs separation, Siren TTS, and OpenCV blur masking.
+*   **Preserved Assets**:
+    *   `audio.src.srt`: Chinese transcript.
+    *   `audio.vi.srt`: Vietnamese translated subtitle file.
+    *   `audio.wav`: Extracted source audio.
+    *   `bgm.wav`: Isolated background music track (~32.8 MB).
+    *   `coords.txt`: Subtitle region coordinates (`1234,1327`).
+    *   `masked.mp4`: Transcoded H.264 masked video track (~46.7 MB).
+    *   `src_lang.txt`: Source language identity (`zh`).
+    *   `tts_voice.wav`: Timeline-locked Vietnamese voiceover audio track (~8.9 MB).
+*   **Verified Outputs**: Verified that both `temp/test_output_full.mp4` and all cache directory assets were fully written and validated successfully without touching other cache zones.
+
+**Status**: Re-run finished successfully. All intermediate assets successfully saved in isolated directory `temp/run_cache_e2e_full_new/`.
+
+---
+
+## 2026-06-21 21:18
+
+**Trigger**: Optimize subtitle segmentation to resolve "bunching" issues.
+
+**Actions Taken**:
+*   **Diagnosed Bunching**: Investigated `stable-ts` segment output and confirmed that continuous speech caused whisper to group too many characters into single cues (lasting 8-11s).
+*   **Implemented Fine-Grained Splitting**: Modified `pipeline/subtitles.py` inside `transcribe_audio` to invoke `result.split_by_gap(0.5)` and `result.split_by_length()`.
+    *   For Chinese/Japanese/Korean (CJK): `max_chars=22`
+    *   For other languages: `max_chars=40`, `max_words=12`
+*   **Validated Segment Splitting**: Ran a quick probe of the transcription & translation stage using the local WAV file, confirming that long segments are split into clean, readable ~3-second subtitles.
+*   **Ran Unit Tests**: Verified that the subtitle zone coordinate and parsing tests under `tests/unit/` still pass cleanly.
+*   **Committed changes**: Committed modifications to `pipeline/subtitles.py` on branch `v6`.
+
+**Status**: Subtitle segment splitting successfully integrated and tested. Bunching issue resolved.
+
+---
+
+## 2026-06-21 21:28
+
+**Trigger**: Shift subtitle splitting responsibility from speech transcription (Whisper/stable-ts) to translation (LLM translation API) to maintain complete semantic context during translation.
+
+**Actions Taken**:
+*   **Reverted stable-ts Splitting**: Reverted `split_by_gap` and `split_by_length` from `transcribe_audio` in `pipeline/subtitles.py`. This ensures the source transcription file (`audio.src.srt`) keeps full, unbroken sentences so the LLM gets maximum context for high-quality translation.
+*   **Designed LLM Translation Splitting Prompt**: Updated the `system_prompt` in `translate_srt` to instruct the LLM:
+    *   If a translated Vietnamese block exceeds 10 words (e.g. longer than the reference phrase `Trí tuệ nhân tạo thực sự kiểm soát máy tính của bạn`), the LLM automatically splits it into consecutive blocks of at most 8-10 words.
+    *   Proportional timestamps: The original block's duration is split proportionally based on the text lengths of the new split blocks.
+    *   Number realignment: Re-numbers all blocks sequentially starting from 1.
+*   **Verified Splitting and Realignment**: Ran direct translation probes on the unsplit Chinese source transcript. Confirmed that the resulting Vietnamese SRT file was perfectly translated, split at natural syntactic boundaries, and timestamps were split proportionally with sequential block IDs.
+*   **Ran verification tests**: Verified that all unit tests (`tests/unit/test_subtitle_zone.py`) continue to pass.
+
+**Status**: Pushed verified translation-level splitting implementation to branch `v6`. Subtitles translation quality and segmentation are now both optimized.
+
+---
+
+## 2026-06-21 21:46
+
+**Trigger**: Enhance translation splitting precision and robustness by moving split calculation to a deterministic Python-based parser/post-processor.
+
+**Actions Taken**:
+*   **Simplified LLM Prompt**: Reverted splitting instructions from `system_prompt` in `translate_srt` to run 1-to-1 block translations. This ensures high efficiency and zero translation structure formatting anomalies.
+*   **Implemented Python Splitting**: Integrated splitting directly inside the `wrap_srt_text` function in `pipeline/subtitles.py` to:
+    *   Parse the translated SRT file into blocks and locate cues exceeding 10 words.
+    *   Distribute words as evenly as possible to achieve balanced, short segments (e.g., target 8 words per block).
+    *   Proportionally divide the original start and end timestamps according to relative character length of the split chunks.
+    *   Re-number all blocks sequentially from 1 to N.
+*   **Verified Full Pipeline Execution**: Ran a cold-start end-to-end execution of `repurpose.py` using cache directories. The output `audio.vi.srt` correctly split all cues under 10 words. Siren TTS successfully aligned the audio, and the final output video rendering completed successfully.
+*   **Ran Unit Tests**: Verified that all coordinate band tests under `tests/unit/` continue to pass.
+
+**Status**: Flawless, short Vietnamese subtitles verified. Pushed implementation to branch `v6`.
+
+---
+
+## 2026-06-21 22:46
+
+**Trigger**: Re-run and validate the Siren TTS synthesis step specifically, leveraging the updated split subtitle file.
+
+**Actions Taken**:
+*   **Targeted Rebuild**: Deleted `temp/run_cache_e2e_full_new/tts_voice.wav` and `temp/test_output_full.mp4` to force only the Siren TTS synthesis and composite rendering steps to run.
+*   **Execution**: Ran `repurpose.py` with caching. The pipeline successfully skipped transcription, translation, vocal separation, and video masking, and executed ONLY the Siren TTS voiceover synthesis and final audio/video compositing.
+*   **Verification**: The newly generated `tts_voice.wav` was successfully synthesized against the short, split subtitles and muxed. The final composite video `temp/test_output_full.mp4` was generated successfully with no issues.
+
+**Status**: Target Siren TTS step verified and working flawlessly. Working tree remains clean.
+
+---
+
+## 2026-06-21 23:20
+
+**Trigger**: Implement concise, pacing-aware translation in system prompt and preserve numerical digits.
+
+**Actions Taken**:
+*   **Refined LLM Prompt Rules**: Updated `system_prompt` in `translate_srt` inside `pipeline/subtitles.py` to:
+    *   Enforce a pacing and conciseness rule to strip out filler words (e.g. *thì, mà, là, thực sự, hoàn toàn, chính là, tất cả các*) and keep translations extremely condensed.
+    *   Instruct the LLM to preserve numbers and symbols as digits (e.g. `2000$`, `4000`, `96%`) instead of writing them out as words, since the Siren TTS engine supports native digit pronunciation.
+*   **Cleaned and Verified Cache Run**: Deleted `audio.vi.srt`, `tts_voice.wav`, `masked.mp4`, and `test_output_full.mp4` to rebuild all post-transcription steps.
+*   **Execution**: Verified that the regenerated Vietnamese translation is highly punchy (size reduced from 11KB to 7.4KB), digits are correctly preserved, and the final video `temp/test_output_full.mp4` renders successfully.
+
+**Status**: Pacing-optimized subtitle pipeline staged, committed, and pushed to origin `v6`.
+
+---
+
+## 2026-06-21 23:32
+
+**Trigger**: Prevent compound words from being split across different timestamps by using punctuation and conjunction aware splitting.
+
+**Actions Taken**:
+*   **Upgraded Splitting Engine (`wrap_srt_text`)**:
+    *   Increased the maximum word count per cue block from `10` to `14` (allowing up to 13 words when splitting, which easily formats as 2 lines at width 36).
+    *   Replaced the purely index-based partition with a punctuation-aware sliding window. It scans the window from right to left and splits immediately after a punctuation mark (`,`, `.`, `?`, `!`, `;`, `:`, etc.).
+    *   If no punctuation is found, it prioritizes splitting before or after major conjunctions (e.g. *và, hoặc, nhưng, để, cho, vì, nên, nếu, thì*).
+*   **Cleaned and Verified Cache Run**: Cleared cache files and re-ran the pipeline.
+*   **Verification**: Verified that the generated `audio.vi.srt` correctly preserves compound phrases like "thông minh", "tất cả", and "thực sự" intact in single blocks without word fragments dropping across boundaries. The final video has rendered successfully.
+
+**Status**: Punctuation-aware segmenter verified, committed, and pushed to remote `v6`.
+
+---
+
+## 2026-06-22 00:07
+
+**Trigger**: Test English subtitle translation and English voiceover (`a865c5dc-938b-447b-a068-6f0b5eb7e301`).
+
+**Actions Taken**:
+*   **Exposed `--target-lang` Option**: Added a command-line argument to `repurpose.py` to support dynamic target languages.
+*   **Adapted Translation Prompt**: Programmed the translation system prompt in `pipeline/subtitles.py` to adapt its pacing rule to target English, stripping out wordy passive constructs, helper verbs, and filler phrases.
+*   **Cloned Non-Voice Assets**: Created a new test cache folder `temp/run_cache_en_test/` and copied Whisper transcription (`audio.src.srt`), vocal separation BGM (`bgm.wav`), original vocals (`audio.wav`), coordinates (`coords.txt`), and source language indicator (`src_lang.txt`) into it.
+*   **Execution**: Ran the pipeline specifying `--target-lang en` and `--siren-voice a865c5dc-938b-447b-a068-6f0b5eb7e301`.
+*   **Verification**: The generated `audio.en.srt` contains high-quality, highly concise English translation with preserved digits (e.g., `$2000`, `RTX4090`, `GPT-4o`). The voiceover was successfully synthesized by Siren and combined to produce the final English video `temp/test_output_en.mp4`.
+
+**Status**: English translation and voiceover pipeline successfully implemented, verified, committed, and pushed to `v6`.
