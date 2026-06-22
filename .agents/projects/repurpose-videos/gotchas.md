@@ -55,3 +55,17 @@ Client payloads sometimes include leading/trailing spaces or enclosing `'"` quot
 Rebuilding Docker image from scratch pulls >1.5GB of PyTorch/CUDA layers. For code-only changes, mount source files as volumes.
 
 **Pattern**: Add `app.py`, `repurpose.py`, `pipeline/` as volume mounts in `docker-compose.yml`, then `docker compose down; docker compose up -d`.
+
+---
+
+## 2026-06-20 — Mandatory User Prompts Before Initiating Pipeline Tests
+
+To prevent accidental and costly pipeline executions on CPU (e.g. rendering full videos, running Demucs, or calling LLMs unnecessarily), the agent must prompt the user and confirm parameters before running any test.
+
+When the user asks you to "test", "verify", or "run" the code/pipeline, you **MUST** ask the user to clarify:
+1. **Scope of Test**: Do they want to test a specific step (using `--rebuild-step <step>` combined with cache) or run the full pipeline?
+2. **Video Orientation**: Are they testing Landscape (16:9) or Portrait (9:16) formats?
+3. **External Services**: Do they want to activate the Siren TTS voiceover/Demucs separation or bypass them using empty credentials (`--siren-key="" --siren-voice=""`)?
+4. **Use of Cache**: Confirm if they want to reuse `--ref-dir` and `--cache-dir` to save execution time.
+
+Do not run the pipeline until the user confirms these choices. Refer to `d:\eddie-projects\personal-projects\repurpose-videos\docs\testing_and_debugging.md` for standard CLI commands.

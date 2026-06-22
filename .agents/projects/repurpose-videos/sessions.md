@@ -880,3 +880,62 @@
 *   **Verification**: The generated `audio.en.srt` contains high-quality, highly concise English translation with preserved digits (e.g., `$2000`, `RTX4090`, `GPT-4o`). The voiceover was successfully synthesized by Siren and combined to produce the final English video `temp/test_output_en.mp4`.
 
 **Status**: English translation and voiceover pipeline successfully implemented, verified, committed, and pushed to `v6`.
+
+---
+
+## 2026-06-22 09:03
+
+**Trigger**: Optimize subtitle visual styling by implementing a 6px black drop shadow (Option 2) in the rendering pipeline.
+
+**Actions Taken**:
+*   Updated `_convert_srt_to_ass` in `pipeline/video.py` to change the subtitle style to a Cinematic Dark Shadow (`glow_color = "&H80000000"` (50% opacity black)).
+*   Set the shadow thickness (`glow_outline`) to a fixed `6px` as requested by the user.
+*   Verified compilation and rendering using a target test script (`temp/verify_shadow.py`). Confirmed that the ASS subtitle file was correctly generated and FFmpeg loaded the `Bungee` font from the local `fonts/` directory.
+*   Confirmed that the output frame at `00:00:04.500` correctly renders white text with a clean, cinematic 6px dark shadow outline, with an increase in white pixels from 55,857 (base frame) to 61,134.
+
+**Status**: Cinematic 6px shadow styling implemented and verified.
+
+---
+
+## 2026-06-22 12:29
+
+**Trigger**: Pull the latest changes from remote branch `v6` to keep the local repository up to date.
+
+**Actions Taken**:
+*   Executed `git pull origin v6` in `D:\eddie-projects\personal-projects\repurpose-videos`.
+*   Successfully fast-forwarded local branch to fetch remote changes, including `soundfile` dependency added to `requirements.txt`.
+*   Ran `pip install -r requirements.txt` to sync the virtual environment with the updated dependencies.
+*   Verified the integration by running all unit tests, confirming they pass successfully.
+
+**Status**: Local branch `v6` pulled and synchronized with updated dependencies.
+
+---
+
+## 2026-06-22 13:10
+
+**Trigger**: Optimize subtitle line-spacing and region-of-interest masking algorithms in `pipeline/video.py`.
+
+**Actions Taken**:
+*   Adjusted Bungee font average character width coefficient from `0.28` to `0.68` in `_convert_srt_to_ass` to ensure accurate line length estimation in Python, preventing FFmpeg from auto-wrapping text.
+*   Reduced the maximum vertical line gap fraction (`_MAX_LINE_GAP_FRAC`) in the subtitle density walk algorithm from `0.05` (5% height) to `0.025` (2.5% height). This limits bridging distance to 27 pixels on 1080p, preventing the walk from jumping to unrelated slide content/headlines.
+*   Increased the minimum row density threshold from `1` to `3` in `_band_from_density`. This filters out transient OCR noise and slide texts appearing on very few frames.
+*   Verified code compilation and successfully executed all automated unit tests (`test_subtitle_zone.py`, `test_subtitles_translation.py`).
+
+**Status**: Line spacing and masking fixes implemented. Awaiting user parameters confirmation to execute end-to-end rendering pipeline validation.
+
+---
+
+## 2026-06-22 14:35
+
+**Trigger**: Verification of V7 Vote-Density projection model and FFmpeg rendering pipeline fixes end-to-end.
+
+**Actions Taken**:
+*   Ran the end-to-end repurposing pipeline on the target video `temp/test_v7_video.mp4` with OCR scanning, translation, vocal separation (Demucs), and Siren TTS synthesis.
+*   Enforced a maximum thread count (`-threads 4`) inside FFmpeg libx264 calls to resolve PyTorch/FFmpeg memory allocation failures on Windows.
+*   Extracted verification frames from the final video output at 5s, 20s, 40s, and 55s.
+*   Conducted a visual audit on the extracted frames:
+    *   Confirmed that giant Chinese slide headers at the top (e.g., "第一步", "第二步") are completely untouched.
+    *   Verified that the complex text tables in the middle are fully readable and free of masks.
+    *   Confirmed that the speech subtitle region at the bottom is accurately masked with a blurred frosted-glass bar and replaced with centered, properly spaced Vietnamese translations.
+
+**Status**: The V7 Vote-Density projection model, subtitle line-spacing logic, and FFmpeg thread limits are fully validated, stable, and ready for production.

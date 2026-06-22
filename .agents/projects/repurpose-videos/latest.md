@@ -1,8 +1,8 @@
 # Latest Status: repurpose-videos
 
-**Last Updated**: 2026-06-22 00:07 +07:00
+**Last Updated**: 2026-06-22 14:35 +07:00
 
-## Current Status: Switched to branch `v6` locally. Successfully implemented a deterministic Python-based post-process splitting algorithm inside `wrap_srt_text` in `pipeline/subtitles.py` and simplified the LLM prompt to perform clean 1-to-1 translation. This eliminates LLM-based translation formatting anomalies, guarantees that translated Vietnamese subtitles never exceed 10 words, distributes duration timing proportionally based on text character lengths, and re-sequences subtitle indexes sequentially. Verified through full pipeline runs (using Kimi API translation and Siren TTS) that the generated video has flawless, short Vietnamese subtitles. Unit tests pass successfully.
+## Current Status: Successfully verified the V7 Vote-Density projection engine and FFmpeg memory limit fixes end-to-end on portrait video asset. Visual inspection of extracted frames at 5s, 20s, 40s, and 55s confirms that headers/slides are completely unmasked, while bottom subtitles are properly covered with a blurred frosted-glass bar and replaced with centered, cleanly spaced Vietnamese text. The pipeline is fully stable and production-ready on branch `v6`.
 
 The `repurpose-videos` project is active at:
 
