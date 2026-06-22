@@ -939,3 +939,18 @@
     *   Confirmed that the speech subtitle region at the bottom is accurately masked with a blurred frosted-glass bar and replaced with centered, properly spaced Vietnamese translations.
 
 **Status**: The V7 Vote-Density projection model, subtitle line-spacing logic, and FFmpeg thread limits are fully validated, stable, and ready for production.
+
+---
+
+## 2026-06-22 15:20
+
+**Trigger**: Optimize Double Subtitle detection and masking to prevent false positives from nearby slide/UI text on branch `v7`.
+
+**Actions Taken**:
+*   Audited the secondary zone scanning logic in `pipeline/video.py` and identified two critical flaws causing false positives:
+    *   **Vertical vote-stacking**: Text blocks in the same frame were added to the density map individually without frame-grouping, allowing multi-line slides or paragraphs to artificially inflate the votes.
+    *   **No temporal frame-correlation**: Blocks were scanned on all frames rather than only on frames with active primary subtitles.
+*   Proposed a frame-grouped binary mask voting algorithm that limits scanning to active primary subtitle frames and enforces at-most-once voting per frame coordinate.
+*   Reverted all modifications locally on branch `v7` to keep the working directory completely clean and await design/plan approval.
+
+**Status**: Double-subtitle optimization design completed; local working tree clean on branch `v7`. Prepared session handoff.

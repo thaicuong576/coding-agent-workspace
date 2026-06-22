@@ -1,8 +1,8 @@
 # Latest Status: repurpose-videos
 
-**Last Updated**: 2026-06-22 14:35 +07:00
+**Last Updated**: 2026-06-22 15:20 +07:00
 
-## Current Status: Successfully verified the V7 Vote-Density projection engine and FFmpeg memory limit fixes end-to-end on portrait video asset. Visual inspection of extracted frames at 5s, 20s, 40s, and 55s confirms that headers/slides are completely unmasked, while bottom subtitles are properly covered with a blurred frosted-glass bar and replaced with centered, cleanly spaced Vietnamese text. The pipeline is fully stable and production-ready on branch `v6`.
+## Current Status: Currently on branch `v7` focusing on optimizing the **Double Subtitle scanning and removal** logic. We analyzed the existing logic and identified a key issue: vertical vote-stacking (where a single frame with multi-line slide text adds multiple votes to the same Y coordinates, causing false positives) and a lack of temporal frame-correlation. We have proposed a frame-grouped binary mask voting algorithm that correlates secondary candidates only with active primary subtitle frames. Code changes have been reverted locally to maintain a clean working tree on branch `v7` until the plan is approved.
 
 The `repurpose-videos` project is active at:
 
@@ -72,10 +72,10 @@ temp*/                    Runtime scratch folders, ignored
 Branch:
 
 ```text
-v6...origin/v6 (up to date, clean working tree)
+v7 (clean working tree, up to date with origin/v7 if pushed, currently clean)
 ```
 
-No modified tracked files or untracked files. All code changes have been pushed to origin.
+Working tree is clean. All active development files have been reverted to original state to await design approval.
 
 ## Verification Run
 
